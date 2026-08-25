@@ -40,6 +40,24 @@ android {
     }
 
     signingConfigs {
+        // Keystore debug TETAP (dikomit ke repo, lihat android/app/keystore/README.md)
+        // supaya SEMUA build debug — di CI GitHub Actions maupun lokal —
+        // selalu ditandatangani dengan kunci yang SAMA persis. Tanpa ini,
+        // tiap run GitHub Actions jalan di VM baru yang bersih dan Android
+        // Gradle Plugin otomatis membuat ~/.android/debug.keystore BARU
+        // (kunci acak berbeda tiap kali), yang menyebabkan dua masalah:
+        // 1. `adb install -r` gagal dengan INSTALL_FAILED_UPDATE_INCOMPATIBLE
+        //    setiap kali update APK dari build CI yang berbeda.
+        // 2. SHA-1 fingerprint ikut berubah tiap build, jadi Login Google
+        //    (yang butuh SHA-1 didaftarkan di Google Cloud Console) selalu
+        //    gagal (DEVELOPER_ERROR) karena fingerprint-nya tidak pernah
+        //    cocok dengan yang terdaftar.
+        create("debug") {
+            storeFile = file("keystore/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         create("release") {
             if (keystorePropertiesFile.exists()) {
                 keyAlias = keystoreProperties["keyAlias"] as String
@@ -51,6 +69,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             signingConfig = if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")
