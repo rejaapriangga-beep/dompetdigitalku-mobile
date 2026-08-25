@@ -33,6 +33,16 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Matikan Impeller (renderer default Flutter sejak versi baru), kembali
+             ke renderer Skia lama. Impeller (khususnya backend Vulkan) punya bug
+             dikenal di sejumlah GPU Adreno/OEM tertentu: window "berhasil digambar"
+             (tidak crash, Fully Drawn tercatat normal di logcat) tapi konten Flutter
+             tidak tampil sama sekali (layar hitam polos) — sementara native platform
+             view (mis. banner AdMob) tetap tampil karena tidak lewat kanvas Impeller.
+             Skia jauh lebih kompatibel lintas GPU/driver walau sedikit lebih lambat. -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
         <!-- AdMob App ID (akun AdMob milik sendiri). -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
