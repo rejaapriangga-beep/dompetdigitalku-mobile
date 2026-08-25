@@ -50,100 +50,173 @@ class ThemeController extends ValueNotifier<ThemeMode> {
   }
 }
 
+/// Satu set warna lengkap untuk salah satu mode (terang ATAU gelap) — dipakai
+/// sebagai SATU-SATUNYA sumber nilai hex, supaya AppColors (yang mengikuti
+/// mode aktif saat ini) dan _buildTheme (yang butuh warna untuk mode terang
+/// & gelap SEKALIGUS, terlepas dari mode aktif saat ini) selalu konsisten.
+class _Palette {
+  final Color bg;
+  final Color surface;
+  final Color surfaceElevated;
+  final Color ink;
+  final Color inkSoft;
+  final Color primary;
+  final Color primaryLight;
+  final Color gold;
+  final Color coral;
+  final Color border;
+  final Color sky;
+  final Color plum;
+  final Color teal;
+  final Color amber;
+  final Color heroGradientEnd;
+
+  const _Palette({
+    required this.bg,
+    required this.surface,
+    required this.surfaceElevated,
+    required this.ink,
+    required this.inkSoft,
+    required this.primary,
+    required this.primaryLight,
+    required this.gold,
+    required this.coral,
+    required this.border,
+    required this.sky,
+    required this.plum,
+    required this.teal,
+    required this.amber,
+    required this.heroGradientEnd,
+  });
+}
+
+const _lightPalette = _Palette(
+  bg: Color(0xFFFFFFFF),
+  surface: Color(0xFFFFFFFF),
+  surfaceElevated: Color(0xFFFFFFFF),
+  ink: Color(0xFF1B2E28),
+  inkSoft: Color(0xFF5B6B63),
+  primary: Color(0xFF0F6650),
+  primaryLight: Color(0xFF3E9C82),
+  gold: Color(0xFFC89B3C),
+  coral: Color(0xFFC4534A),
+  border: Color(0xFFE4DFD3),
+  sky: Color(0xFF3B7FC4),
+  plum: Color(0xFF8B5FBF),
+  teal: Color(0xFF1E9E8E),
+  amber: Color(0xFFE08A3C),
+  heroGradientEnd: Color(0xFF0B4E3D),
+);
+
+const _darkPalette = _Palette(
+  bg: Color(0xFF000000),
+  surface: Color(0xFF1C1C1E),
+  surfaceElevated: Color(0xFF262628),
+  ink: Color(0xFFF2F2F2),
+  inkSoft: Color(0xFF98989D),
+  primary: Color(0xFF34C98E),
+  primaryLight: Color(0xFF5FD1A6),
+  gold: Color(0xFFE3B65A),
+  coral: Color(0xFFE37268),
+  border: Color(0xFF313133),
+  sky: Color(0xFF5B9FE0),
+  plum: Color(0xFFA47FD9),
+  teal: Color(0xFF3DBEA9),
+  amber: Color(0xFFE8A366),
+  heroGradientEnd: Color(0xFF1B5B44),
+);
+
+_Palette _paletteFor({required bool dark}) => dark ? _darkPalette : _lightPalette;
+
 class AppColors {
   static bool get _dark => ThemeController.instance.isDark;
+  static _Palette get _p => _paletteFor(dark: _dark);
 
-  static Color get bg =>
-      _dark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
-  static Color get surface =>
-      _dark ? const Color(0xFF1C1C1E) : const Color(0xFFFFFFFF);
-  static Color get surfaceElevated =>
-      _dark ? const Color(0xFF262628) : const Color(0xFFFFFFFF);
-  static Color get ink =>
-      _dark ? const Color(0xFFF2F2F2) : const Color(0xFF1B2E28);
-  static Color get inkSoft =>
-      _dark ? const Color(0xFF98989D) : const Color(0xFF5B6B63);
-  static Color get primary =>
-      _dark ? const Color(0xFF34C98E) : const Color(0xFF0F6650);
-  static Color get primaryLight =>
-      _dark ? const Color(0xFF5FD1A6) : const Color(0xFF3E9C82);
-  static Color get gold =>
-      _dark ? const Color(0xFFE3B65A) : const Color(0xFFC89B3C);
-  static Color get coral =>
-      _dark ? const Color(0xFFE37268) : const Color(0xFFC4534A);
-  static Color get border =>
-      _dark ? const Color(0xFF313133) : const Color(0xFFE4DFD3);
+  static Color get bg => _p.bg;
+  static Color get surface => _p.surface;
+  static Color get surfaceElevated => _p.surfaceElevated;
+  static Color get ink => _p.ink;
+  static Color get inkSoft => _p.inkSoft;
+  static Color get primary => _p.primary;
+  static Color get primaryLight => _p.primaryLight;
+  static Color get gold => _p.gold;
+  static Color get coral => _p.coral;
+  static Color get border => _p.border;
 
   // Aksen tambahan (dekoratif saja — bukan warna semantik keuangan) supaya
   // menu/kartu di mobile terasa lebih hidup & berwarna, di luar palet inti
   // yang tetap sama persis dengan web untuk primary/coral/gold.
-  static Color get sky =>
-      _dark ? const Color(0xFF5B9FE0) : const Color(0xFF3B7FC4);
-  static Color get plum =>
-      _dark ? const Color(0xFFA47FD9) : const Color(0xFF8B5FBF);
-  static Color get teal =>
-      _dark ? const Color(0xFF3DBEA9) : const Color(0xFF1E9E8E);
-  static Color get amber =>
-      _dark ? const Color(0xFFE8A366) : const Color(0xFFE08A3C);
+  static Color get sky => _p.sky;
+  static Color get plum => _p.plum;
+  static Color get teal => _p.teal;
+  static Color get amber => _p.amber;
 
   /// Gradasi hijau brand — dipakai untuk kartu hero (mis. Total Aset Bersih)
   /// supaya lebih dinamis dibanding warna flat.
   static LinearGradient get heroGradient => LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      primary,
-      _dark ? const Color(0xFF1B5B44) : const Color(0xFF0B4E3D),
-    ],
+    colors: [primary, _p.heroGradientEnd],
   );
 }
 
+// Dulu fungsi ini mengambil warna lewat getter AppColors.xxx, yang diam-diam
+// mengikuti ThemeController.instance.isDark (variabel GLOBAL) — bukan
+// parameter `brightness` di bawah ini. Akibatnya buildAppTheme() (terang)
+// dan buildDarkAppTheme() (gelap) bisa jadi punya warna custom yang SAMA
+// PERSIS (ikut kondisi global saat itu, bukan mode masing-masing), padahal
+// metadata `brightness`-nya beda — kombinasi label/warna yang tidak sinkron
+// ini bisa membuat teks jadi senada dengan latar (tidak kelihatan). Sekarang
+// warnanya diambil langsung dari _Palette sesuai `brightness` yang dioper ke
+// fungsi ini, jadi kedua ThemeData selalu benar terlepas dari mode aktif
+// saat ini.
 ThemeData _buildTheme(Brightness brightness) {
   final isDark = brightness == Brightness.dark;
+  final p = _paletteFor(dark: isDark);
   return ThemeData(
     useMaterial3: true,
     brightness: brightness,
-    scaffoldBackgroundColor: AppColors.bg,
+    scaffoldBackgroundColor: p.bg,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      primary: AppColors.primary,
-      surface: AppColors.surface,
-      error: AppColors.coral,
+      seedColor: p.primary,
+      primary: p.primary,
+      surface: p.surface,
+      error: p.coral,
       brightness: brightness,
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.surface,
-      foregroundColor: AppColors.ink,
+      backgroundColor: p.surface,
+      foregroundColor: p.ink,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
     ),
     cardTheme: CardThemeData(
-      color: AppColors.surface,
+      color: p.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppColors.border),
+        side: BorderSide(color: p.border),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: isDark ? AppColors.surfaceElevated : AppColors.bg,
+      fillColor: isDark ? p.surfaceElevated : p.bg,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(11),
-        borderSide: BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: p.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(11),
-        borderSide: BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: p.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(11),
-        borderSide: BorderSide(color: AppColors.primary, width: 2),
+        borderSide: BorderSide(color: p.primary, width: 2),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: p.primary,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
