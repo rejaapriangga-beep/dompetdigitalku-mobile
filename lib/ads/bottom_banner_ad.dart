@@ -22,7 +22,7 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
   @override
   void initState() {
     super.initState();
-    _loadAd();
+    if (kAdsEnabled) _loadAd();
   }
 
   void _loadAd() {
