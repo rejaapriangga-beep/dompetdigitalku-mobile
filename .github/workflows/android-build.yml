@@ -40,6 +40,16 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # Keystore debug TETAP (bukan yang auto-generate acak tiap VM baru)
+      # — supaya APK dari build manapun selalu bisa saling update/replace
+      # lewat `adb install -r`, dan SHA-1-nya konsisten untuk didaftarkan
+      # ke Google Cloud Console (Login Google). Lihat
+      # android/app/keystore/README.md untuk detail lengkapnya.
+      - name: Restore stable debug keystore
+        run: |
+          mkdir -p android/app/keystore
+          echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore/debug.keystore
+
       - name: Build debug APK
         run: flutter build apk --debug
 
