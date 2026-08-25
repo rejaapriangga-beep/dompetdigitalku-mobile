@@ -1,5 +1,6 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -11,6 +12,18 @@ import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Kunci ke mode potret saja. UI aplikasi ini sama sekali tidak didesain
+  // untuk lanskap (tidak ada satu layar pun yang menanganinya), dan dari
+  // logcat perangkat asli terlihat layar hitam (konten Flutter tidak
+  // tergambar, hanya banner iklan native yang tetap tampil) selalu terjadi
+  // tepat setelah event rotasi layar — kemungkinan besar ada race saat
+  // engine Flutter/Skia harus menggambar ulang ke surface Android yang
+  // baru saja di-resize akibat rotasi. Mengunci orientasi menghilangkan
+  // seluruh kelas bug ini alih-alih menambal gejalanya satu per satu.
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   // Data format tanggal untuk kedua bahasa (nama bulan dsb.) — dipakai lewat
   // DateFormat(..., LocaleController.instance.isEnglish ? 'en_US' : 'id_ID')
   // di layar-layar yang menampilkan tanggal dalam bentuk teks panjang.
