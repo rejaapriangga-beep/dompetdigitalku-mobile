@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'ads/ad_ids.dart';
 import 'api/auth_api.dart';
 import 'locale_controller.dart';
 import 'screens/login_screen.dart';
@@ -34,7 +35,10 @@ Future<void> main() async {
   // Tidak di-await sengaja — supaya startup aplikasi tidak menunggu SDK
   // iklan siap; permintaan iklan pertama akan otomatis menunggu sendiri
   // kalau inisialisasi belum selesai.
-  MobileAds.instance.initialize();
+  // Dimatikan sementara lewat kAdsEnabled (lihat ads/ad_ids.dart) selama
+  // masa review 14 hari, untuk mengisolasi dugaan bug layar hitam dari
+  // AdMob.
+  if (kAdsEnabled) MobileAds.instance.initialize();
   runApp(const DompetDigitalKuApp());
 }
 
