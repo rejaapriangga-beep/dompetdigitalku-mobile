@@ -27,7 +27,14 @@ Store — untuk itu tetap pakai `key.properties` + keystore rilis terpisah
 (lihat `android/app/build.gradle.kts`, bagian `signingConfigs["release"]`).
 
 SHA-1 keystore debug ini (daftarkan ke Google Cloud Console untuk fix Login
-Google): `90:98:27:7E:7C:6D:AE:DC:E4:99:9F:3B:2A:C9:4D:F9:2B:52:02:9C`
+Google): `4A:29:9A:CE:AA:6D:CC:FC:14:A4:7E:EC:43:D9:64:3E:F6:4C:2D:1F`
+
+(Catatan: keystore ini pernah diganti sekali — SHA-1 lama
+`90:98:27:7E:7C:6D:AE:DC:E4:99:9F:3B:2A:C9:4D:F9:2B:52:02:9C` sempat
+kepakai duluan buat OAuth client Android yang salah project di Google
+Cloud, lalu dihapus. Karena Google menahan pasangan package+SHA-1 yang
+sudah dihapus selama 30 hari sebelum benar-benar bebas dipakai lagi,
+lebih cepat generate keystore baru daripada menunggu.)
 
 ## Kalau mau build lokal (opsional)
 
