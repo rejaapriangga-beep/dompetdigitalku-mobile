@@ -6,7 +6,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'ads/ad_ids.dart';
 import 'api/auth_api.dart';
+import 'biometric/biometric_prefs.dart';
 import 'locale_controller.dart';
+import 'screens/biometric_lock_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'theme.dart';
@@ -96,27 +98,35 @@ class _AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<_AuthGate> {
-  late Future<bool> _loggedInFuture;
+  // (sudah login?, kunci sidik jari aktif?) — dicek bareng sekali di awal
+  // supaya kalau kunci sidik jari aktif, BiometricLockScreen yang tampil
+  // duluan, bukan Beranda langsung.
+  late Future<(bool, bool)> _stateFuture;
 
   @override
   void initState() {
     super.initState();
-    _loggedInFuture = AuthApi.isLoggedIn();
+    _stateFuture = Future.wait([
+      AuthApi.isLoggedIn(),
+      BiometricPrefs.isEnabled(),
+    ]).then((r) => (r[0], r[1]));
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: _loggedInFuture,
+    return FutureBuilder<(bool, bool)>(
+      future: _stateFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        return (snapshot.data ?? false)
-            ? const HomeScreen()
-            : const LoginScreen();
+        final (loggedIn, biometricLockOn) = snapshot.data ?? (false, false);
+        if (!loggedIn) return const LoginScreen();
+        return biometricLockOn
+            ? const BiometricLockScreen()
+            : const HomeScreen();
       },
     );
   }

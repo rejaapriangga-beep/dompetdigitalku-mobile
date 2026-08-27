@@ -1,9 +1,13 @@
 package id.dompetdigitalku.dompetdigitalku
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.android.RenderMode
 
-class MainActivity : FlutterActivity() {
+// FlutterFragmentActivity (bukan FlutterActivity biasa) — dibutuhkan paket
+// local_auth supaya BiometricPrompt Android bisa ditampilkan (fitur kunci
+// sidik jari, lihat lib/biometric/). FlutterFragmentActivity tetap turunan
+// dari FlutterActivity, jadi semua override di bawah ini tetap berlaku sama.
+class MainActivity : FlutterFragmentActivity() {
     // Mode render default Flutter ("surface") menggambar ke SurfaceView
     // terpisah yang di-composite langsung oleh hardware compositor, DI LUAR
     // urutan Z normal View Android — sementara banner AdMob (AdWidget dari

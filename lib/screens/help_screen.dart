@@ -3,6 +3,8 @@
 // biar ringkas — tinggal tap judulnya untuk buka/tutup). Isinya statis,
 // tidak perlu koneksi internet.
 import 'package:flutter/material.dart';
+import '../biometric/biometric_prefs.dart';
+import '../biometric/biometric_service.dart';
 import '../l10n/app_strings.dart';
 import '../theme.dart';
 import '../urls.dart';
@@ -141,6 +143,8 @@ class HelpScreen extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 12),
+          const _BiometricLockTile(),
           const SizedBox(height: 16),
           ..._sections.map((s) => _HelpTile(section: s)),
           const SizedBox(height: 8),
@@ -181,6 +185,110 @@ class HelpScreen extends StatelessWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Toggle "Kunci Sidik Jari" — mengaktifkan lewat sini butuh satu kali
+/// verifikasi sidik jari dulu (biar tidak sengaja terkunci di perangkat yang
+/// ternyata sensornya bermasalah); mematikan tidak perlu verifikasi ulang.
+class _BiometricLockTile extends StatefulWidget {
+  const _BiometricLockTile();
+
+  @override
+  State<_BiometricLockTile> createState() => _BiometricLockTileState();
+}
+
+class _BiometricLockTileState extends State<_BiometricLockTile> {
+  bool _enabled = false;
+  bool _loading = true;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final enabled = await BiometricPrefs.isEnabled();
+    if (!mounted) return;
+    setState(() {
+      _enabled = enabled;
+      _loading = false;
+    });
+  }
+
+  Future<void> _toggle(bool value) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      if (value) {
+        final supported = await BiometricService.isSupported();
+        if (!supported) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(S.t.biometricNotAvailable)));
+          return;
+        }
+        final ok = await BiometricService.authenticate(
+          S.t.biometricEnableReason,
+        );
+        if (!ok) return;
+      }
+      await BiometricPrefs.setEnabled(value);
+      if (!mounted) return;
+      setState(() => _enabled = value);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.fingerprint, size: 22, color: AppColors.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  S.t.biometricLockTitle,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: AppColors.ink,
+                  ),
+                ),
+                Text(
+                  S.t.biometricLockSubtitle,
+                  style: TextStyle(fontSize: 11, color: AppColors.inkSoft),
+                  maxLines: 2,
+                ),
+              ],
+            ),
+          ),
+          _busy
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Switch(value: _enabled, onChanged: _toggle),
         ],
       ),
     );

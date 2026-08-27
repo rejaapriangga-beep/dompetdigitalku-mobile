@@ -346,6 +346,15 @@ class AppStringsData {
     required this.skipButton,
     required this.startNowButton,
     required this.nextButton,
+    // --- Kunci sidik jari (help_screen.dart, biometric_lock_screen.dart) ---
+    required this.biometricLockTitle,
+    required this.biometricLockSubtitle,
+    required this.biometricNotAvailable,
+    required this.biometricEnableReason,
+    required this.biometricUnlockReason,
+    required this.biometricLockedScreenTitle,
+    required this.biometricUnlockButton,
+    required this.biometricUnlockFailed,
   });
 
   final String appName;
@@ -667,6 +676,15 @@ class AppStringsData {
   final String skipButton;
   final String startNowButton;
   final String nextButton;
+  // --- Kunci sidik jari (help_screen.dart, biometric_lock_screen.dart) ---
+  final String biometricLockTitle;
+  final String biometricLockSubtitle;
+  final String biometricNotAvailable;
+  final String biometricEnableReason;
+  final String biometricUnlockReason;
+  final String biometricLockedScreenTitle;
+  final String biometricUnlockButton;
+  final String biometricUnlockFailed;
 }
 
 String typeConfirmWordToConfirm(String word) =>
@@ -1193,6 +1211,16 @@ const _id = AppStringsData(
   skipButton: 'Lewati',
   startNowButton: 'Mulai Sekarang',
   nextButton: 'Lanjut',
+  biometricLockTitle: 'Kunci Sidik Jari',
+  biometricLockSubtitle:
+      'Wajibkan verifikasi sidik jari/Face ID setiap kali membuka app.',
+  biometricNotAvailable:
+      'Perangkat ini tidak mendukung sidik jari/Face ID, atau belum ada yang didaftarkan di pengaturan HP.',
+  biometricEnableReason: 'Verifikasi untuk mengaktifkan kunci sidik jari',
+  biometricUnlockReason: 'Verifikasi sidik jari untuk membuka DompetDigitalKu',
+  biometricLockedScreenTitle: 'Terkunci',
+  biometricUnlockButton: 'Buka dengan Sidik Jari',
+  biometricUnlockFailed: 'Verifikasi gagal. Coba lagi.',
 );
 
 const _en = AppStringsData(
@@ -1606,4 +1634,14 @@ const _en = AppStringsData(
   skipButton: 'Skip',
   startNowButton: 'Get Started',
   nextButton: 'Next',
+  biometricLockTitle: 'Fingerprint Lock',
+  biometricLockSubtitle:
+      'Require fingerprint/Face ID verification every time you open the app.',
+  biometricNotAvailable:
+      "This device doesn't support fingerprint/Face ID, or none is enrolled in your phone's settings yet.",
+  biometricEnableReason: 'Verify to enable fingerprint lock',
+  biometricUnlockReason: 'Verify your fingerprint to unlock DompetDigitalKu',
+  biometricLockedScreenTitle: 'Locked',
+  biometricUnlockButton: 'Unlock with Fingerprint',
+  biometricUnlockFailed: 'Verification failed. Try again.',
 );

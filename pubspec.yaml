@@ -67,6 +67,9 @@ dependencies:
   file_picker: ^8.1.6
   # Iklan banner (Google AdMob)
   google_mobile_ads: ^5.2.0
+  # Kunci aplikasi pakai sidik jari/Face ID (opsional, diaktifkan lewat
+  # toggle di halaman Bantuan) — lihat lib/biometric/.
+  local_auth: ^2.3.0
 
 dev_dependencies:
   flutter_test:
