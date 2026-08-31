@@ -298,56 +298,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   Divider(color: AppColors.border, height: 1),
                   const SizedBox(height: 14),
 
-                  // --- Hero: Total Aset Bersih ---
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 13,
-                      horizontal: 18,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.heroGradient,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            S.t.totalNetAssets,
-                            style: const TextStyle(
-                              fontSize: 12.5,
-                              color: Colors.white70,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          rp(_asetBersihTotal),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 11),
-
                   // --- Stat list (1 card per baris, persentase komposisi
                   // aset ikut di sini) — urutan: Kas, Aset Tetap, Investasi,
-                  // Utang, supaya nilai rupiah tidak terpotong. Tiap card
-                  // bisa di-tap untuk lompat ke sub-tab terkait di halaman
-                  // Aset & Utang.
+                  // Utang, Total Aset Bersih paling bawah, supaya nilai
+                  // rupiah tidak terpotong. Tiap card bisa di-tap untuk
+                  // lompat ke sub-tab terkait di halaman Aset & Utang.
                   _StatTile(
                     label: S.t.statCash,
                     value: rp(_kas),
@@ -389,6 +344,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () => _openMenu(
                       const AccountsAssetsScreen(initialTabIndex: 3),
                     ),
+                  ),
+                  const SizedBox(height: 6),
+                  _StatTile(
+                    label: S.t.totalNetAssets,
+                    value: rp(_asetBersihTotal),
+                    color: _asetBersihTotal < 0
+                        ? AppColors.coral
+                        : AppColors.primary,
+                    icon: Icons.account_balance,
                   ),
                   const SizedBox(height: 14),
                   Divider(color: AppColors.border, height: 1),
