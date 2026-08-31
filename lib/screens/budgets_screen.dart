@@ -274,7 +274,7 @@ class _BudgetSummaryCard extends StatelessWidget {
     final pct = totalBudget > 0 ? (totalSpent / totalBudget * 100) : 0.0;
     final color = pct >= 100
         ? AppColors.coral
-        : (pct >= 80 ? AppColors.gold : AppColors.primary);
+        : (pct >= 80 ? AppColors.gold : AppColors.success);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       decoration: BoxDecoration(
@@ -331,7 +331,7 @@ class _BudgetProgressBar extends StatelessWidget {
     final pct = budget > 0 ? (spent / budget * 100) : 0.0;
     final color = pct >= 100
         ? AppColors.coral
-        : (pct >= 80 ? AppColors.gold : AppColors.primary);
+        : (pct >= 80 ? AppColors.gold : AppColors.success);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

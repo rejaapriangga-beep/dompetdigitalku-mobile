@@ -62,6 +62,7 @@ class _Palette {
   final Color inkSoft;
   final Color primary;
   final Color primaryLight;
+  final Color success;
   final Color gold;
   final Color coral;
   final Color border;
@@ -79,6 +80,7 @@ class _Palette {
     required this.inkSoft,
     required this.primary,
     required this.primaryLight,
+    required this.success,
     required this.gold,
     required this.coral,
     required this.border,
@@ -94,18 +96,19 @@ const _lightPalette = _Palette(
   bg: Color(0xFFFFFFFF),
   surface: Color(0xFFFFFFFF),
   surfaceElevated: Color(0xFFFFFFFF),
-  ink: Color(0xFF1B2E28),
-  inkSoft: Color(0xFF5B6B63),
-  primary: Color(0xFF0F6650),
-  primaryLight: Color(0xFF3E9C82),
+  ink: Color(0xFF14232A),
+  inkSoft: Color(0xFF5E7681),
+  primary: Color(0xFF0CC0DF),
+  primaryLight: Color(0xFF6BD9EC),
+  success: Color(0xFF1E9E5C),
   gold: Color(0xFFC89B3C),
-  coral: Color(0xFFC4534A),
-  border: Color(0xFFE4DFD3),
+  coral: Color(0xFFA83227),
+  border: Color(0xFFDCEEF2),
   sky: Color(0xFF3B7FC4),
   plum: Color(0xFF8B5FBF),
   teal: Color(0xFF1E9E8E),
   amber: Color(0xFFE08A3C),
-  heroGradientEnd: Color(0xFF0B4E3D),
+  heroGradientEnd: Color(0xFF0894AC),
 );
 
 const _darkPalette = _Palette(
@@ -113,17 +116,18 @@ const _darkPalette = _Palette(
   surface: Color(0xFF1C1C1E),
   surfaceElevated: Color(0xFF262628),
   ink: Color(0xFFF2F2F2),
-  inkSoft: Color(0xFF98989D),
-  primary: Color(0xFF34C98E),
-  primaryLight: Color(0xFF5FD1A6),
+  inkSoft: Color(0xFF9AB0B8),
+  primary: Color(0xFF38CFEA),
+  primaryLight: Color(0xFF7BE1F2),
+  success: Color(0xFF4ADE80),
   gold: Color(0xFFE3B65A),
-  coral: Color(0xFFE37268),
+  coral: Color(0xFFE98072),
   border: Color(0xFF313133),
   sky: Color(0xFF5B9FE0),
   plum: Color(0xFFA47FD9),
   teal: Color(0xFF3DBEA9),
   amber: Color(0xFFE8A366),
-  heroGradientEnd: Color(0xFF1B5B44),
+  heroGradientEnd: Color(0xFF1AA8C2),
 );
 
 _Palette _paletteFor({required bool dark}) => dark ? _darkPalette : _lightPalette;
@@ -139,6 +143,11 @@ class AppColors {
   static Color get inkSoft => _p.inkSoft;
   static Color get primary => _p.primary;
   static Color get primaryLight => _p.primaryLight;
+
+  /// Warna semantik "positif" (pemasukan, lunas, rasio sehat) — dipisah dari
+  /// [primary] supaya makna "bagus"-nya tetap jelas walau warna brand
+  /// (primary) bukan hijau/teal lagi. Mirror dari --success di web.
+  static Color get success => _p.success;
   static Color get gold => _p.gold;
   static Color get coral => _p.coral;
   static Color get border => _p.border;

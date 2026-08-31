@@ -242,7 +242,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
                                 backgroundColor: AppColors.bg,
                                 valueColor: AlwaysStoppedAnimation(
                                   isPaidOff
-                                      ? AppColors.primary
+                                      ? AppColors.success
                                       : AppColors.gold,
                                 ),
                               ),

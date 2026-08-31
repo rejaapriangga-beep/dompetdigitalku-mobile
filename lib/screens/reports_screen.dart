@@ -343,7 +343,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                               child: StatCard(
                                 label: S.t.statIncome,
                                 value: rp(_sumIncome),
-                                color: AppColors.primary,
+                                color: AppColors.success,
                                 icon: Icons.arrow_downward_rounded,
                               ),
                             ),
@@ -398,7 +398,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                     Text(
                                       '+${rp(c.income)} ',
                                       style: TextStyle(
-                                        color: AppColors.primary,
+                                        color: AppColors.success,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 12.5,
                                       ),
@@ -500,7 +500,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                       fontWeight: FontWeight.w600,
                                       color: t.type == 'expense'
                                           ? AppColors.coral
-                                          : AppColors.primary,
+                                          : AppColors.success,
                                     ),
                                   ),
                                 ],
@@ -616,9 +616,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                     ? '0%'
                                     : '${_debtToAssetPct!.toStringAsFixed(1)}%',
                                 valueColor: _debtToAssetPct == null
-                                    ? AppColors.primary
+                                    ? AppColors.success
                                     : (_debtToAssetPct! <= 30
-                                          ? AppColors.primary
+                                          ? AppColors.success
                                           : (_debtToAssetPct! <= 50
                                                 ? AppColors.gold
                                                 : AppColors.coral)),

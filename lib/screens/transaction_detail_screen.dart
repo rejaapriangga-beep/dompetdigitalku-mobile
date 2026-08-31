@@ -140,7 +140,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   decoration: BoxDecoration(
                     color: isExpense
                         ? AppColors.coral.withValues(alpha: 0.12)
-                        : AppColors.primary.withValues(alpha: 0.12),
+                        : AppColors.success.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -148,7 +148,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
-                      color: isExpense ? AppColors.coral : AppColors.primary,
+                      color: isExpense ? AppColors.coral : AppColors.success,
                     ),
                   ),
                 ),
@@ -158,7 +158,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
-                    color: isExpense ? AppColors.coral : AppColors.primary,
+                    color: isExpense ? AppColors.coral : AppColors.success,
                   ),
                 ),
               ],
