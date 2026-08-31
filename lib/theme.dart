@@ -98,8 +98,8 @@ const _lightPalette = _Palette(
   surfaceElevated: Color(0xFFFFFFFF),
   ink: Color(0xFF14232A),
   inkSoft: Color(0xFF5E7681),
-  primary: Color(0xFF0CC0DF),
-  primaryLight: Color(0xFF6BD9EC),
+  primary: Color(0xFF0894AC),
+  primaryLight: Color(0xFF0CC0DF),
   success: Color(0xFF1E9E5C),
   gold: Color(0xFFC89B3C),
   coral: Color(0xFFA83227),
@@ -108,7 +108,7 @@ const _lightPalette = _Palette(
   plum: Color(0xFF8B5FBF),
   teal: Color(0xFF1E9E8E),
   amber: Color(0xFFE08A3C),
-  heroGradientEnd: Color(0xFF0894AC),
+  heroGradientEnd: Color(0xFF066B7D),
 );
 
 const _darkPalette = _Palette(
@@ -117,8 +117,8 @@ const _darkPalette = _Palette(
   surfaceElevated: Color(0xFF262628),
   ink: Color(0xFFF2F2F2),
   inkSoft: Color(0xFF9AB0B8),
-  primary: Color(0xFF38CFEA),
-  primaryLight: Color(0xFF7BE1F2),
+  primary: Color(0xFF29B8D6),
+  primaryLight: Color(0xFF5DD3EA),
   success: Color(0xFF4ADE80),
   gold: Color(0xFFE3B65A),
   coral: Color(0xFFE98072),
@@ -127,7 +127,7 @@ const _darkPalette = _Palette(
   plum: Color(0xFFA47FD9),
   teal: Color(0xFF3DBEA9),
   amber: Color(0xFFE8A366),
-  heroGradientEnd: Color(0xFF1AA8C2),
+  heroGradientEnd: Color(0xFF128DA6),
 );
 
 _Palette _paletteFor({required bool dark}) => dark ? _darkPalette : _lightPalette;
