@@ -13,7 +13,7 @@ enum Tier { good, warn, bad }
 Color _tierColor(Tier t) {
   switch (t) {
     case Tier.good:
-      return AppColors.primary;
+      return AppColors.success;
     case Tier.warn:
       return AppColors.gold;
     case Tier.bad:

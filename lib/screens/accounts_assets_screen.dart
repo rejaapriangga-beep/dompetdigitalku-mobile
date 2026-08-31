@@ -265,7 +265,7 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
           StatCard(
             label: S.t.totalCash,
             value: rp(_totalKas),
-            color: _totalKas < 0 ? AppColors.coral : AppColors.primary,
+            color: _totalKas < 0 ? AppColors.coral : AppColors.success,
             icon: Icons.account_balance_wallet_outlined,
           ),
           const SizedBox(height: 20),
@@ -410,7 +410,7 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: _investGain >= 0
-                        ? AppColors.primary
+                        ? AppColors.success
                         : AppColors.coral,
                   ),
                 ),
@@ -472,7 +472,7 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 12.5,
-                        color: positive ? AppColors.primary : AppColors.coral,
+                        color: positive ? AppColors.success : AppColors.coral,
                       ),
                     ),
                     const SizedBox(height: 8),

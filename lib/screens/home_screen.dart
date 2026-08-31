@@ -352,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _StatTile(
                     label: S.t.statCash,
                     value: rp(_kas),
-                    color: _kas < 0 ? AppColors.coral : AppColors.primary,
+                    color: _kas < 0 ? AppColors.coral : AppColors.success,
                     icon: Icons.account_balance_wallet,
                     pct: _totalAsetKeseluruhan > 0 ? _kasPct : null,
                     onTap: () => _openMenu(
@@ -428,9 +428,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: _RatioCard(
                           icon: Icons.health_and_safety_outlined,
                           color: _debtToAssetPct == null
-                              ? AppColors.primary
+                              ? AppColors.success
                               : (_debtToAssetPct! <= 30
-                                    ? AppColors.primary
+                                    ? AppColors.success
                                     : (_debtToAssetPct! <= 50
                                           ? AppColors.gold
                                           : AppColors.coral)),
@@ -543,7 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontSize: 13,
                                 color: t.type == 'expense'
                                     ? AppColors.coral
-                                    : AppColors.primary,
+                                    : AppColors.success,
                               ),
                             ),
                           ],
@@ -758,7 +758,7 @@ class _BudgetHomeSummary extends StatelessWidget {
         ? AppColors.inkSoft
         : (pct >= 100
               ? AppColors.coral
-              : (pct >= 80 ? AppColors.gold : AppColors.primary));
+              : (pct >= 80 ? AppColors.gold : AppColors.success));
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),

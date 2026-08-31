@@ -414,7 +414,7 @@ class _TransactionRow extends StatelessWidget {
                 '${isExpense ? '-' : '+'}${rp(t.amount)}',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: isExpense ? AppColors.coral : AppColors.primary,
+                  color: isExpense ? AppColors.coral : AppColors.success,
                 ),
               ),
               IconButton(
