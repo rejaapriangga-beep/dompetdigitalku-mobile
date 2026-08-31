@@ -112,10 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ? (_totalAsetTetap / _totalAsetKeseluruhan) * 100
       : 0;
 
-  String _formatRatio(double numerator, double denominator) => denominator > 0
-      ? '${(numerator / denominator).toStringAsFixed(2)} : 1'
-      : S.t.noDebt;
-
   double get _totalBudgetSet =>
       _budgets.values.fold(0, (s, v) => s + (v > 0 ? v : 0));
   double get _totalSpentBudgeted {
@@ -132,13 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
               budgetedCatIds.contains(t.category.id),
         )
         .fold(0.0, (s, t) => s + t.amount);
-  }
-
-  double? get _debtToAssetPct {
-    if (_totalAsetKeseluruhan > 0)
-      return (_totalUtang / _totalAsetKeseluruhan) * 100;
-    if (_totalUtang > 0) return 100;
-    return null;
   }
 
   Future<void> _logout() async {
@@ -306,6 +295,104 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () => _openMenu(const BudgetsScreen()),
                   ),
                   const SizedBox(height: 14),
+                  Divider(color: AppColors.border, height: 1),
+                  const SizedBox(height: 14),
+
+                  // --- Hero: Total Aset Bersih ---
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 13,
+                      horizontal: 18,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: AppColors.heroGradient,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            S.t.totalNetAssets,
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          rp(_asetBersihTotal),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 11),
+
+                  // --- Stat list (1 card per baris, persentase komposisi
+                  // aset ikut di sini) — urutan: Kas, Aset Tetap, Investasi,
+                  // Utang, supaya nilai rupiah tidak terpotong. Tiap card
+                  // bisa di-tap untuk lompat ke sub-tab terkait di halaman
+                  // Aset & Utang.
+                  _StatTile(
+                    label: S.t.statCash,
+                    value: rp(_kas),
+                    color: _kas < 0 ? AppColors.coral : AppColors.success,
+                    icon: Icons.account_balance_wallet,
+                    pct: _totalAsetKeseluruhan > 0 ? _kasPct : null,
+                    onTap: () => _openMenu(
+                      const AccountsAssetsScreen(initialTabIndex: 0),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _StatTile(
+                    label: S.t.statFixedAssets,
+                    value: rp(_totalAsetTetap),
+                    color: AppColors.sky,
+                    icon: Icons.home_work_outlined,
+                    pct: _totalAsetKeseluruhan > 0 ? _asetTetapPct : null,
+                    onTap: () => _openMenu(
+                      const AccountsAssetsScreen(initialTabIndex: 1),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _StatTile(
+                    label: S.t.statInvestments,
+                    value: rp(_totalInvestasi),
+                    color: AppColors.gold,
+                    icon: Icons.trending_up,
+                    pct: _totalAsetKeseluruhan > 0 ? _investasiPct : null,
+                    onTap: () => _openMenu(
+                      const AccountsAssetsScreen(initialTabIndex: 2),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _StatTile(
+                    label: S.t.statActiveDebt,
+                    value: rp(_totalUtang),
+                    color: AppColors.coral,
+                    icon: Icons.credit_card,
+                    onTap: () => _openMenu(
+                      const AccountsAssetsScreen(initialTabIndex: 3),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Divider(color: AppColors.border, height: 1),
+                  const SizedBox(height: 14),
 
                   // --- Transaksi Terakhir ---
                   Row(
@@ -407,152 +494,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 14),
-
-                  // --- Rasio Keuangan ---
-                  Text(
-                    S.t.financialRatios,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _RatioCard(
-                          icon: Icons.compare_arrows,
-                          color: AppColors.teal,
-                          label: S.t.ratioCashInvestToDebt,
-                          value: _formatRatio(_totalAsetLikuid, _totalUtang),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _RatioCard(
-                          icon: Icons.account_balance,
-                          color: AppColors.plum,
-                          label: S.t.ratioTotalAssetsToDebt,
-                          value: _formatRatio(
-                            _totalAsetKeseluruhan,
-                            _totalUtang,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _RatioCard(
-                          icon: Icons.health_and_safety_outlined,
-                          color: _debtToAssetPct == null
-                              ? AppColors.success
-                              : (_debtToAssetPct! <= 30
-                                    ? AppColors.success
-                                    : (_debtToAssetPct! <= 50
-                                          ? AppColors.gold
-                                          : AppColors.coral)),
-                          label: S.t.ratioDebtToAsset,
-                          value: _debtToAssetPct == null
-                              ? '0%'
-                              : '${_debtToAssetPct!.toStringAsFixed(1)}%',
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-
-                  // --- Hero: Total Aset Bersih ---
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 13,
-                      horizontal: 18,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.heroGradient,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            S.t.totalNetAssets,
-                            style: const TextStyle(
-                              fontSize: 12.5,
-                              color: Colors.white70,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          rp(_asetBersihTotal),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 11),
-
-                  // --- Stat list (1 card per baris, persentase komposisi
-                  // aset ikut di sini) — urutan: Kas, Aset Tetap, Investasi,
-                  // Utang, supaya nilai rupiah tidak terpotong. Tiap card
-                  // bisa di-tap untuk lompat ke sub-tab terkait di halaman
-                  // Aset & Utang.
-                  _StatTile(
-                    label: S.t.statCash,
-                    value: rp(_kas),
-                    color: _kas < 0 ? AppColors.coral : AppColors.success,
-                    icon: Icons.account_balance_wallet,
-                    pct: _totalAsetKeseluruhan > 0 ? _kasPct : null,
-                    onTap: () => _openMenu(
-                      const AccountsAssetsScreen(initialTabIndex: 0),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  _StatTile(
-                    label: S.t.statFixedAssets,
-                    value: rp(_totalAsetTetap),
-                    color: AppColors.sky,
-                    icon: Icons.home_work_outlined,
-                    pct: _totalAsetKeseluruhan > 0 ? _asetTetapPct : null,
-                    onTap: () => _openMenu(
-                      const AccountsAssetsScreen(initialTabIndex: 1),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  _StatTile(
-                    label: S.t.statInvestments,
-                    value: rp(_totalInvestasi),
-                    color: AppColors.gold,
-                    icon: Icons.trending_up,
-                    pct: _totalAsetKeseluruhan > 0 ? _investasiPct : null,
-                    onTap: () => _openMenu(
-                      const AccountsAssetsScreen(initialTabIndex: 2),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  _StatTile(
-                    label: S.t.statActiveDebt,
-                    value: rp(_totalUtang),
-                    color: AppColors.coral,
-                    icon: Icons.credit_card,
-                    onTap: () => _openMenu(
-                      const AccountsAssetsScreen(initialTabIndex: 3),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -680,61 +621,6 @@ class _StatTile extends StatelessWidget {
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Kartu rasio keuangan yang ringkas & berwarna — 3 dijejer sejajar
-/// (menggantikan panel putih polos bergaris pemisah yang lama).
-class _RatioCard extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String label;
-  final String value;
-  const _RatioCard({
-    required this.icon,
-    required this.color,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(height: 5),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 9.5,
-              color: AppColors.inkSoft,
-              height: 1.15,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
       ),
     );
   }
