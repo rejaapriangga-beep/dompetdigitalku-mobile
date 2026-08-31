@@ -94,7 +94,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         return false;
       return true;
     }).toList();
-    list.sort((a, b) => b.date.compareTo(a.date));
+    list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return list;
   }
 

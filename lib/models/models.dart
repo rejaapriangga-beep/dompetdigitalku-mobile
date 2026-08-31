@@ -118,6 +118,7 @@ class Transaction {
   final String name; // Nama Transaksi (bebas diisi)
   final Category category;
   final DateTime date;
+  final DateTime createdAt;
   final String? note;
   final String accountId;
   final String? accountName;
@@ -132,6 +133,7 @@ class Transaction {
     required this.name,
     required this.category,
     required this.date,
+    required this.createdAt,
     this.note,
     required this.accountId,
     this.accountName,
@@ -147,6 +149,7 @@ class Transaction {
     name: json['name'],
     category: Category.fromJson(json['category']),
     date: DateTime.parse(json['date']),
+    createdAt: DateTime.parse(json['createdAt']),
     note: json['note'],
     accountId: json['accountId'],
     accountName: json['account']?['name'],
