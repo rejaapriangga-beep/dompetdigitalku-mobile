@@ -169,6 +169,8 @@ class AppStringsData {
     required this.toLabel,
     required this.typeLabel,
     required this.filterAll,
+    required this.filterCategoryAll,
+    required this.searchTransactionHint,
     required this.clearCategoryFilter,
     required this.statBalanceNet,
     required this.categoryBreakdownTitle,
@@ -500,6 +502,8 @@ class AppStringsData {
   final String toLabel;
   final String typeLabel;
   final String filterAll;
+  final String filterCategoryAll;
+  final String searchTransactionHint;
   final String clearCategoryFilter;
   final String statBalanceNet;
   final String categoryBreakdownTitle;
@@ -958,6 +962,8 @@ const _id = AppStringsData(
   toLabel: 'Sampai',
   typeLabel: 'Tipe',
   filterAll: 'Semua',
+  filterCategoryAll: 'Semua Kategori',
+  searchTransactionHint: 'Cari nama transaksi...',
   clearCategoryFilter: 'Bersihkan pilihan kategori',
   statBalanceNet: 'Saldo Bersih',
   categoryBreakdownTitle: 'Rincian per Kategori',
@@ -1376,6 +1382,8 @@ const _en = AppStringsData(
   toLabel: 'To',
   typeLabel: 'Type',
   filterAll: 'All',
+  filterCategoryAll: 'All Categories',
+  searchTransactionHint: 'Search transaction name...',
   clearCategoryFilter: 'Clear category selection',
   statBalanceNet: 'Net Balance',
   categoryBreakdownTitle: 'Breakdown by Category',

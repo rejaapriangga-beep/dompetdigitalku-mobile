@@ -14,7 +14,6 @@ import '../storage/local_invoice_store.dart';
 import '../storage/token_storage.dart';
 import '../theme.dart';
 import '../widgets/currency_field.dart';
-import '../widgets/stat_card.dart';
 import 'login_screen.dart';
 import 'accounts_assets_screen.dart';
 import 'budgets_screen.dart';
@@ -42,18 +41,39 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   bool _loading = true;
   String? _error;
 
-  // Filter sederhana: cuma jenis transaksi (semua/masuk/keluar), tidak
-  // pakai rentang tanggal atau kategori seperti di halaman Laporan —
-  // supaya tampilannya tetap ringkas di sini.
+  // Filter sederhana: jenis transaksi (semua/masuk/keluar), kategori, dan
+  // pencarian nama — tidak pakai rentang tanggal seperti di halaman
+  // Laporan, supaya tampilannya tetap ringkas di sini.
   String _typeFilter = 'all';
-  List<Transaction> get _filteredTransactions => _typeFilter == 'all'
-      ? _transactions
-      : _transactions.where((t) => t.type == _typeFilter).toList();
+  String? _categoryFilter;
+  final _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+
+  List<Transaction> get _filteredTransactions => _transactions.where((t) {
+    if (_typeFilter != 'all' && t.type != _typeFilter) return false;
+    if (_categoryFilter != null && t.category.id != _categoryFilter) {
+      return false;
+    }
+    if (_searchQuery.isNotEmpty &&
+        !t.name.toLowerCase().contains(_searchQuery.toLowerCase())) {
+      return false;
+    }
+    return true;
+  }).toList();
 
   @override
   void initState() {
     super.initState();
     _load();
+    _searchCtrl.addListener(
+      () => setState(() => _searchQuery = _searchCtrl.text.trim()),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -256,30 +276,29 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: StatCard(
+                        child: _MiniStat(
                           label: S.t.statIncome,
                           value: rp(_income),
                           color: AppColors.primary,
-                          icon: Icons.arrow_downward_rounded,
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
                       Expanded(
-                        child: StatCard(
+                        child: _MiniStat(
                           label: S.t.statExpense,
                           value: rp(_expense),
                           color: AppColors.coral,
-                          icon: Icons.arrow_upward_rounded,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _MiniStat(
+                          label: S.t.statBalance,
+                          value: rp(_income - _expense),
+                          color: AppColors.sky,
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 10),
-                  StatCard(
-                    label: S.t.statBalance,
-                    value: rp(_income - _expense),
-                    color: AppColors.sky,
-                    icon: Icons.account_balance_wallet_outlined,
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -290,8 +309,25 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
+                  TextField(
+                    controller: _searchCtrl,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: S.t.searchTransactionHint,
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      suffixIcon: _searchCtrl.text.isEmpty
+                          ? null
+                          : IconButton(
+                              icon: const Icon(Icons.clear, size: 18),
+                              onPressed: () => _searchCtrl.clear(),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       _TypeFilterChip(
                         label: S.t.filterAll,
@@ -307,6 +343,40 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         label: S.t.statExpense,
                         selected: _typeFilter == 'expense',
                         onTap: () => setState(() => _typeFilter = 'expense'),
+                      ),
+                      SizedBox(
+                        width: 160,
+                        child: DropdownButtonFormField<String?>(
+                          initialValue: _categoryFilter,
+                          isDense: true,
+                          decoration: const InputDecoration(
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                          ),
+                          items: [
+                            DropdownMenuItem(
+                              value: null,
+                              child: Text(
+                                S.t.filterCategoryAll,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            ..._categories.map(
+                              (c) => DropdownMenuItem(
+                                value: c.id,
+                                child: Text(
+                                  c.name,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ],
+                          onChanged: (v) =>
+                              setState(() => _categoryFilter = v),
+                        ),
                       ),
                     ],
                   ),
@@ -351,6 +421,53 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               ),
       ),
       bottomNavigationBar: const BottomBannerAd(),
+    );
+  }
+}
+
+/// Card ringkasan versi ringkas (tanpa badge ikon) supaya Pemasukan,
+/// Pengeluaran, dan Saldo bisa muat sejajar dalam 1 baris.
+class _MiniStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+  const _MiniStat({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 10.5, color: AppColors.inkSoft),
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 3),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }
