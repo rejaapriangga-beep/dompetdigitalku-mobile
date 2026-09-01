@@ -349,6 +349,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         child: DropdownButtonFormField<String?>(
                           initialValue: _categoryFilter,
                           isDense: true,
+                          isExpanded: true,
                           decoration: const InputDecoration(
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(
