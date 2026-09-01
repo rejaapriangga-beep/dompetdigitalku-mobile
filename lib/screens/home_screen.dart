@@ -618,9 +618,13 @@ class _BudgetHomeSummary extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          // Diberi rona plum (warna yang sama dipakai ikon menu "Anggaran"
+          // di _TopMenuBar) supaya card ini punya identitas warna sendiri,
+          // beda dari card netral lainnya — warna status (hijau/kuning/
+          // merah) tetap dipakai di ikon, progress bar, dan badge persen.
+          color: AppColors.plum.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.plum.withValues(alpha: 0.25)),
         ),
         child: Row(
           children: [
