@@ -147,6 +147,9 @@ class AppStringsData {
     required this.saveBudgetFailed,
     required this.noCategoryYetBudget,
     required this.totalRealizationThisMonth,
+    required this.budgetTabSet,
+    required this.budgetTabHistory,
+    required this.budgetHistoryEmpty,
     // --- Kategori (categories_screen.dart) ---
     required this.categoryScreenTitle,
     required this.tabExpenseCategory,
@@ -480,6 +483,9 @@ class AppStringsData {
   final String saveBudgetFailed;
   final String noCategoryYetBudget;
   final String totalRealizationThisMonth;
+  final String budgetTabSet;
+  final String budgetTabHistory;
+  final String budgetHistoryEmpty;
   // --- Kategori (categories_screen.dart) ---
   final String categoryScreenTitle;
   final String tabExpenseCategory;
@@ -938,6 +944,11 @@ const _id = AppStringsData(
   noCategoryYetBudget:
       'Belum ada kategori. Tambah dulu lewat "Kelola kategori".',
   totalRealizationThisMonth: 'Total Realisasi Bulan Ini',
+  budgetTabSet: 'Set Anggaran',
+  budgetTabHistory: 'Historis',
+  budgetHistoryEmpty:
+      'Belum ada data historis. Atur anggaran & catat transaksi pengeluaran '
+      'agar rekap pencapaian per bulan muncul di sini.',
   categoryScreenTitle: 'Kategori Transaksi',
   tabExpenseCategory: 'Kategori Pengeluaran',
   tabIncomeCategory: 'Kategori Pemasukan',
@@ -1357,6 +1368,11 @@ const _en = AppStringsData(
   noCategoryYetBudget:
       'No category yet. Add one first via "Manage categories".',
   totalRealizationThisMonth: 'Total Realization This Month',
+  budgetTabSet: 'Set Budget',
+  budgetTabHistory: 'History',
+  budgetHistoryEmpty:
+      'No history data yet. Set a budget & record expense transactions so '
+      'the monthly achievement recap shows up here.',
   categoryScreenTitle: 'Transaction Categories',
   tabExpenseCategory: 'Expense Categories',
   tabIncomeCategory: 'Income Categories',
