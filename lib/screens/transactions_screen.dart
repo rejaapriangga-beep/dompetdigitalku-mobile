@@ -42,6 +42,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   bool _loading = true;
   String? _error;
 
+  // Filter sederhana: cuma jenis transaksi (semua/masuk/keluar), tidak
+  // pakai rentang tanggal atau kategori seperti di halaman Laporan —
+  // supaya tampilannya tetap ringkas di sini.
+  String _typeFilter = 'all';
+  List<Transaction> get _filteredTransactions => _typeFilter == 'all'
+      ? _transactions
+      : _transactions.where((t) => t.type == _typeFilter).toList();
+
   @override
   void initState() {
     super.initState();
@@ -282,7 +290,28 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  if (_transactions.isEmpty)
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      _TypeFilterChip(
+                        label: S.t.filterAll,
+                        selected: _typeFilter == 'all',
+                        onTap: () => setState(() => _typeFilter = 'all'),
+                      ),
+                      _TypeFilterChip(
+                        label: S.t.statIncome,
+                        selected: _typeFilter == 'income',
+                        onTap: () => setState(() => _typeFilter = 'income'),
+                      ),
+                      _TypeFilterChip(
+                        label: S.t.statExpense,
+                        selected: _typeFilter == 'expense',
+                        onTap: () => setState(() => _typeFilter = 'expense'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  if (_filteredTransactions.isEmpty)
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 24),
                       child: Center(
@@ -293,7 +322,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       ),
                     )
                   else
-                    ..._transactions.map(
+                    ..._filteredTransactions.map(
                       (t) => _TransactionRow(
                         t: t,
                         hasInvoice:
@@ -322,6 +351,38 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               ),
       ),
       bottomNavigationBar: const BottomBannerAd(),
+    );
+  }
+}
+
+/// Pill filter jenis transaksi (Semua/Masuk/Keluar) — single-select,
+/// sengaja dibuat sesederhana mungkin (tanpa rentang tanggal/kategori
+/// seperti di halaman Laporan).
+class _TypeFilterChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _TypeFilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      label: Text(label, style: const TextStyle(fontSize: 12)),
+      selected: selected,
+      onSelected: (_) => onTap(),
+      selectedColor: AppColors.primary,
+      labelStyle: TextStyle(
+        color: selected ? Colors.white : AppColors.inkSoft,
+        fontWeight: FontWeight.w600,
+      ),
+      backgroundColor: AppColors.bg,
+      side: BorderSide(
+        color: selected ? AppColors.primary : AppColors.border,
+      ),
     );
   }
 }
