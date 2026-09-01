@@ -49,6 +49,22 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
 
+  List<Category> get _categoriesForFilter => _typeFilter == 'all'
+      ? _categories
+      : _categories.where((c) => c.type == _typeFilter).toList();
+
+  void _setTypeFilter(String value) {
+    setState(() {
+      _typeFilter = value;
+      final valid = value == 'all'
+          ? _categories
+          : _categories.where((c) => c.type == value).toList();
+      if (_categoryFilter != null && !valid.any((c) => c.id == _categoryFilter)) {
+        _categoryFilter = null;
+      }
+    });
+  }
+
   List<Transaction> get _filteredTransactions => _transactions.where((t) {
     if (_typeFilter != 'all' && t.type != _typeFilter) return false;
     if (_categoryFilter != null && t.category.id != _categoryFilter) {
@@ -332,17 +348,17 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       _TypeFilterChip(
                         label: S.t.filterAll,
                         selected: _typeFilter == 'all',
-                        onTap: () => setState(() => _typeFilter = 'all'),
+                        onTap: () => _setTypeFilter('all'),
                       ),
                       _TypeFilterChip(
                         label: S.t.statIncome,
                         selected: _typeFilter == 'income',
-                        onTap: () => setState(() => _typeFilter = 'income'),
+                        onTap: () => _setTypeFilter('income'),
                       ),
                       _TypeFilterChip(
                         label: S.t.statExpense,
                         selected: _typeFilter == 'expense',
-                        onTap: () => setState(() => _typeFilter = 'expense'),
+                        onTap: () => _setTypeFilter('expense'),
                       ),
                       SizedBox(
                         width: 160,
@@ -350,6 +366,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           initialValue: _categoryFilter,
                           isDense: true,
                           isExpanded: true,
+                          style: TextStyle(fontSize: 12, color: AppColors.ink),
                           decoration: const InputDecoration(
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(
@@ -365,7 +382,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            ..._categories.map(
+                            ..._categoriesForFilter.map(
                               (c) => DropdownMenuItem(
                                 value: c.id,
                                 child: Text(
