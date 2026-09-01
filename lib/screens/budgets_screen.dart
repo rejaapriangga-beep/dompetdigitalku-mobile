@@ -72,6 +72,7 @@ class _BudgetsScreenState extends State<BudgetsScreen>
     if (_totalBudget <= 0) return [];
     final spentByMonth = <String, double>{};
     final monthOf = <String, DateTime>{};
+    final txByMonth = <String, List<Transaction>>{};
     for (final t in _transactions) {
       if (t.type != 'expense' || (_budgets[t.category.id] ?? 0) <= 0) {
         continue;
@@ -79,6 +80,7 @@ class _BudgetsScreenState extends State<BudgetsScreen>
       final key = _monthKey(t.date);
       spentByMonth[key] = (spentByMonth[key] ?? 0) + t.amount;
       monthOf[key] = DateTime(t.date.year, t.date.month);
+      txByMonth.putIfAbsent(key, () => []).add(t);
     }
     final list = monthOf.entries
         .map(
@@ -86,10 +88,29 @@ class _BudgetsScreenState extends State<BudgetsScreen>
             month: e.value,
             totalBudget: _totalBudget,
             totalSpent: spentByMonth[e.key] ?? 0,
+            transactions: txByMonth[e.key]!
+              ..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
           ),
         )
         .toList();
     list.sort((a, b) => b.month.compareTo(a.month));
+    return list;
+  }
+
+  /// Transaksi pengeluaran kategori [categoryId] bulan berjalan — sumber
+  /// data yang sama dengan yang dipakai menghitung [_spent], jadi konsisten
+  /// dengan angka realisasi yang ditampilkan di card kategori.
+  List<Transaction> _transactionsForCategoryThisMonth(String categoryId) {
+    final thisMonth = _monthKey(DateTime.now());
+    final list = _transactions
+        .where(
+          (t) =>
+              t.type == 'expense' &&
+              t.category.id == categoryId &&
+              _monthKey(t.date) == thisMonth,
+        )
+        .toList();
+    list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return list;
   }
 
@@ -220,6 +241,14 @@ class _BudgetsScreenState extends State<BudgetsScreen>
                     ..._categories.map((c) {
                       final budget = _budgets[c.id] ?? 0;
                       final spent = _spent[c.id] ?? 0;
+                      void openCategoryTransactions() =>
+                          _showTransactionListSheet(
+                            context,
+                            title: c.name,
+                            transactions: _transactionsForCategoryThisMonth(
+                              c.id,
+                            ),
+                          );
                       return Container(
                         margin: const EdgeInsets.only(bottom: 6),
                         padding: const EdgeInsets.symmetric(
@@ -239,26 +268,32 @@ class _BudgetsScreenState extends State<BudgetsScreen>
                                 Expanded(
                                   child: Align(
                                     alignment: Alignment.centerLeft,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 7,
-                                        vertical: 3,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.bg,
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                          color: AppColors.border,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(20),
+                                      onTap: openCategoryTransactions,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 7,
+                                          vertical: 3,
                                         ),
-                                      ),
-                                      child: Text(
-                                        c.name,
-                                        style: TextStyle(
-                                          fontSize: 10.5,
-                                          color: AppColors.inkSoft,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.bg,
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                          border: Border.all(
+                                            color: AppColors.border,
+                                          ),
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                        child: Text(
+                                          c.name,
+                                          style: TextStyle(
+                                            fontSize: 10.5,
+                                            color: AppColors.inkSoft,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -302,7 +337,14 @@ class _BudgetsScreenState extends State<BudgetsScreen>
                             ),
                             if (budget > 0) ...[
                               const SizedBox(height: 6),
-                              _BudgetProgressBar(spent: spent, budget: budget),
+                              InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: openCategoryTransactions,
+                                child: _BudgetProgressBar(
+                                  spent: spent,
+                                  budget: budget,
+                                ),
+                              ),
                             ],
                           ],
                         ),
@@ -349,15 +391,18 @@ class _MonthRecap {
   final DateTime month;
   final double totalBudget;
   final double totalSpent;
+  final List<Transaction> transactions;
   const _MonthRecap({
     required this.month,
     required this.totalBudget,
     required this.totalSpent,
+    required this.transactions,
   });
 }
 
 /// Card rekap 1 bulan di tab Historis — tampilannya sama dengan
-/// _BudgetSummaryCard, ditambah label nama bulan di atasnya.
+/// _BudgetSummaryCard, ditambah label nama bulan di atasnya. Bisa di-tap
+/// untuk melihat daftar transaksi bulan tersebut.
 class _MonthRecapCard extends StatelessWidget {
   final _MonthRecap recap;
   const _MonthRecapCard({required this.recap});
@@ -378,11 +423,141 @@ class _MonthRecapCard extends StatelessWidget {
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
           ),
         ),
-        _BudgetSummaryCard(
-          totalBudget: recap.totalBudget,
-          totalSpent: recap.totalSpent,
+        InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => _showTransactionListSheet(
+            context,
+            title: monthLabel,
+            transactions: recap.transactions,
+          ),
+          child: _BudgetSummaryCard(
+            totalBudget: recap.totalBudget,
+            totalSpent: recap.totalSpent,
+          ),
         ),
       ],
+    );
+  }
+}
+
+/// Menampilkan daftar transaksi (kategori tertentu bulan ini, atau semua
+/// transaksi realisasi anggaran 1 bulan) dalam sebuah popup — dipakai dari
+/// tab Set Anggaran maupun tab Historis.
+void _showTransactionListSheet(
+  BuildContext context, {
+  required String title,
+  required List<Transaction> transactions,
+}) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: AppColors.surface,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (ctx) => DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.6,
+      minChildSize: 0.3,
+      maxChildSize: 0.9,
+      builder: (ctx, scrollController) => Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 8, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(ctx).pop(),
+                ),
+              ],
+            ),
+          ),
+          Divider(height: 1, color: AppColors.border),
+          Expanded(
+            child: transactions.isEmpty
+                ? Center(
+                    child: Text(
+                      S.t.noTransactionsYet,
+                      style: TextStyle(color: AppColors.inkSoft),
+                    ),
+                  )
+                : ListView.builder(
+                    controller: scrollController,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    itemCount: transactions.length,
+                    itemBuilder: (_, i) =>
+                        _SimpleTransactionRow(t: transactions[i]),
+                  ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Baris transaksi versi ringkas (read-only, tanpa aksi hapus/lihat invoice)
+/// dipakai di dalam popup daftar transaksi.
+class _SimpleTransactionRow extends StatelessWidget {
+  final Transaction t;
+  const _SimpleTransactionRow({required this.t});
+
+  @override
+  Widget build(BuildContext context) {
+    final isExpense = t.type == 'expense';
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppColors.border)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  t.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  DateFormat(
+                    'd MMMM yyyy',
+                    LocaleController.instance.dateLocale,
+                  ).format(t.date),
+                  style: TextStyle(fontSize: 11, color: AppColors.inkSoft),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '${isExpense ? '-' : '+'}${rp(t.amount)}',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: isExpense ? AppColors.coral : AppColors.success,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
