@@ -4,10 +4,16 @@
 // kategori bisa diisi/diubah jumlah anggaran bulanan (tersimpan otomatis
 // saat selesai edit), dan sekarang menampilkan progress realisasi
 // pengeluaran bulan berjalan per kategori + ringkasan total di atas.
+// Halaman ini punya 2 tab: "Set Anggaran" (form di atas) dan "Historis"
+// (rekap pencapaian anggaran per bulan, dihitung dari histori transaksi —
+// budget tidak diversi per bulan di backend, jadi rekap historis memakai
+// pengaturan anggaran yang aktif SAAT INI sebagai acuan tiap bulannya).
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../ads/bottom_banner_ad.dart';
 import '../api/data_api.dart';
 import '../l10n/app_strings.dart';
+import '../locale_controller.dart';
 import '../models/models.dart';
 import '../theme.dart';
 import '../widgets/currency_field.dart';
@@ -23,23 +29,28 @@ class BudgetsScreen extends StatefulWidget {
   State<BudgetsScreen> createState() => _BudgetsScreenState();
 }
 
-class _BudgetsScreenState extends State<BudgetsScreen> {
+class _BudgetsScreenState extends State<BudgetsScreen>
+    with SingleTickerProviderStateMixin {
   List<Category> _categories = [];
   Map<String, double> _budgets = {};
   Map<String, double> _spent = {};
+  List<Transaction> _transactions = [];
   final Map<String, TextEditingController> _controllers = {};
   bool _loading = true;
   String? _error;
   String? _savingCat;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _load();
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     for (final c in _controllers.values) {
       c.dispose();
     }
@@ -51,6 +62,36 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   double get _totalSpent => _budgets.entries
       .where((e) => e.value > 0)
       .fold(0, (s, e) => s + (_spent[e.key] ?? 0));
+
+  /// Rekap pencapaian anggaran per bulan, dari histori transaksi. Budget
+  /// tidak disimpan per bulan di backend (cuma satu nilai "anggaran
+  /// bulanan" aktif) — jadi tiap bulan lampau dibandingkan terhadap
+  /// pengaturan anggaran yang aktif SAAT INI, bukan anggaran yang berlaku
+  /// waktu itu.
+  List<_MonthRecap> get _monthlyRecaps {
+    if (_totalBudget <= 0) return [];
+    final spentByMonth = <String, double>{};
+    final monthOf = <String, DateTime>{};
+    for (final t in _transactions) {
+      if (t.type != 'expense' || (_budgets[t.category.id] ?? 0) <= 0) {
+        continue;
+      }
+      final key = _monthKey(t.date);
+      spentByMonth[key] = (spentByMonth[key] ?? 0) + t.amount;
+      monthOf[key] = DateTime(t.date.year, t.date.month);
+    }
+    final list = monthOf.entries
+        .map(
+          (e) => _MonthRecap(
+            month: e.value,
+            totalBudget: _totalBudget,
+            totalSpent: spentByMonth[e.key] ?? 0,
+          ),
+        )
+        .toList();
+    list.sort((a, b) => b.month.compareTo(a.month));
+    return list;
+  }
 
   Future<void> _load() async {
     setState(() {
@@ -84,6 +125,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         _categories = cats;
         _budgets = budgets;
         _spent = spent;
+        _transactions = txs;
       });
     } catch (_) {
       setState(() => _error = S.t.errorLoadData);
@@ -127,14 +169,30 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
             child: Text(S.t.manageCategoryLink),
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: S.t.budgetTabSet),
+            Tab(text: S.t.budgetTabHistory),
+          ],
+        ),
       ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
+      body: TabBarView(
+        controller: _tabController,
+        children: [_buildSetTab(), _buildHistoryTab()],
+      ),
+      bottomNavigationBar: const BottomBannerAd(),
+    );
+  }
+
+  Widget _buildSetTab() {
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
                   if (_error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -253,8 +311,78 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                   ],
                 ],
               ),
-      ),
-      bottomNavigationBar: const BottomBannerAd(),
+    );
+  }
+
+  Widget _buildHistoryTab() {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    final recaps = _monthlyRecaps;
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: recaps.isEmpty
+          ? ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    S.t.budgetHistoryEmpty,
+                    style: TextStyle(color: AppColors.inkSoft),
+                  ),
+                ),
+              ],
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: recaps.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 8),
+              itemBuilder: (_, i) => _MonthRecapCard(recap: recaps[i]),
+            ),
+    );
+  }
+}
+
+/// Rekap pencapaian anggaran untuk satu bulan (tab Historis).
+class _MonthRecap {
+  final DateTime month;
+  final double totalBudget;
+  final double totalSpent;
+  const _MonthRecap({
+    required this.month,
+    required this.totalBudget,
+    required this.totalSpent,
+  });
+}
+
+/// Card rekap 1 bulan di tab Historis — tampilannya sama dengan
+/// _BudgetSummaryCard, ditambah label nama bulan di atasnya.
+class _MonthRecapCard extends StatelessWidget {
+  final _MonthRecap recap;
+  const _MonthRecapCard({required this.recap});
+
+  @override
+  Widget build(BuildContext context) {
+    final monthLabel = DateFormat(
+      'MMMM yyyy',
+      LocaleController.instance.dateLocale,
+    ).format(recap.month);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6, left: 2),
+          child: Text(
+            monthLabel,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+        ),
+        _BudgetSummaryCard(
+          totalBudget: recap.totalBudget,
+          totalSpent: recap.totalSpent,
+        ),
+      ],
     );
   }
 }
