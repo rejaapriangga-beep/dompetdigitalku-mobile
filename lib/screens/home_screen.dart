@@ -295,7 +295,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () => _openMenu(const BudgetsScreen()),
                   ),
                   const SizedBox(height: 14),
-                  Divider(color: AppColors.border, height: 1),
+                  Divider(
+                    color: AppColors.inkSoft.withValues(alpha: 0.18),
+                    height: 1,
+                  ),
                   const SizedBox(height: 14),
 
                   // --- Stat list (1 card per baris, persentase komposisi
@@ -355,7 +358,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Icons.account_balance,
                   ),
                   const SizedBox(height: 14),
-                  Divider(color: AppColors.border, height: 1),
+                  Divider(
+                    color: AppColors.inkSoft.withValues(alpha: 0.18),
+                    height: 1,
+                  ),
                   const SizedBox(height: 14),
 
                   // --- Transaksi Terakhir ---
