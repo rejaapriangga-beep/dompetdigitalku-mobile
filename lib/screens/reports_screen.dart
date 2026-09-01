@@ -35,13 +35,15 @@ class _ReportsScreenState extends State<ReportsScreen> {
   late DateTime _from;
   late DateTime _to;
   String _typeFilter = 'all';
-  final Set<String> _selectedCategories = {};
+  String? _categoryFilter;
 
   @override
   void initState() {
     super.initState();
     final now = DateTime.now();
-    _from = DateTime(now.year, now.month, 1);
+    // "Dari" selalu mulai dari 1 Januari tahun yang dipilih (lihat dropdown
+    // tahun di filter) — bukan tanggal bebas seperti "Sampai".
+    _from = DateTime(now.year, 1, 1);
     _to = _dateOnly(now);
     _load();
   }
@@ -73,6 +75,18 @@ class _ReportsScreenState extends State<ReportsScreen> {
     }
   }
 
+  /// Pilihan tahun untuk dropdown "Dari" — dari tahun transaksi tertua
+  /// sampai tahun berjalan (turun), minimal berisi tahun berjalan saja
+  /// kalau belum ada transaksi sama sekali.
+  List<int> get _availableYears {
+    final thisYear = DateTime.now().year;
+    var earliest = thisYear;
+    for (final t in _transactions) {
+      if (t.date.year < earliest) earliest = t.date.year;
+    }
+    return [for (var y = thisYear; y >= earliest; y--) y];
+  }
+
   List<Category> get _allCategories {
     final map = <String, Category>{};
     for (final t in _transactions) {
@@ -89,9 +103,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
       if (d.isBefore(_from)) return false;
       if (d.isAfter(_to)) return false;
       if (_typeFilter != 'all' && t.type != _typeFilter) return false;
-      if (_selectedCategories.isNotEmpty &&
-          !_selectedCategories.contains(t.category.id))
+      if (_categoryFilter != null && t.category.id != _categoryFilter) {
         return false;
+      }
       return true;
     }).toList();
     list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -152,21 +166,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return null;
   }
 
-  Future<void> _pickDate({required bool isFrom}) async {
+  /// "Sampai" tetap tanggal bebas (beda dengan "Dari" yang sekarang
+  /// dropdown tahun, selalu 1 Januari).
+  Future<void> _pickToDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: isFrom ? _from : _to,
+      initialDate: _to,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
     if (picked == null) return;
-    setState(() {
-      if (isFrom) {
-        _from = _dateOnly(picked);
-      } else {
-        _to = _dateOnly(picked);
-      }
-    });
+    setState(() => _to = _dateOnly(picked));
   }
 
   @override
@@ -208,128 +218,139 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             ),
                           ),
 
-                        // Filter
+                        // Filter — Dari/Sampai/Tipe/Kategori dijejer 1
+                        // baris supaya ringkas; masing-masing dropdown
+                        // (kecuali Sampai, yang tetap tanggal bebas lewat
+                        // date picker) memakai isExpanded+ellipsis supaya
+                        // tidak overflow walau kolomnya sempit.
                         Container(
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(color: AppColors.border),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: InkWell(
-                                      onTap: () => _pickDate(isFrom: true),
-                                      child: InputDecorator(
-                                        decoration: InputDecoration(
-                                          labelText: S.t.fromLabel,
-                                        ),
-                                        child: Text(df.format(_from)),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: InkWell(
-                                      onTap: () => _pickDate(isFrom: false),
-                                      child: InputDecorator(
-                                        decoration: InputDecoration(
-                                          labelText: S.t.toLabel,
-                                        ),
-                                        child: Text(df.format(_to)),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              DropdownButtonFormField<String>(
-                                initialValue: _typeFilter,
-                                isExpanded: true,
-                                decoration: InputDecoration(
-                                  labelText: S.t.typeLabel,
-                                ),
-                                items: [
-                                  DropdownMenuItem(
-                                    value: 'all',
-                                    child: Text(S.t.filterAll),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'income',
-                                    child: Text(S.t.statIncome),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'expense',
-                                    child: Text(S.t.statExpense),
-                                  ),
-                                ],
-                                onChanged: (v) =>
-                                    setState(() => _typeFilter = v!),
-                              ),
-                              if (_allCategories.isNotEmpty) ...[
-                                const SizedBox(height: 10),
-                                Text(
-                                  S.t.categoryLabel,
+                              Expanded(
+                                child: DropdownButtonFormField<int>(
+                                  initialValue: _from.year,
+                                  isDense: true,
+                                  isExpanded: true,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: AppColors.inkSoft,
+                                    color: AppColors.ink,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  items: _availableYears
+                                      .map(
+                                        (y) => DropdownMenuItem(
+                                          value: y,
+                                          child: Text('$y'),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: (y) => setState(
+                                    () => _from = DateTime(y!, 1, 1),
                                   ),
                                 ),
-                                const SizedBox(height: 6),
-                                Wrap(
-                                  spacing: 6,
-                                  runSpacing: 6,
-                                  children: _allCategories.map((cat) {
-                                    final active = _selectedCategories.contains(
-                                      cat.id,
-                                    );
-                                    return FilterChip(
-                                      label: Text(
-                                        cat.name,
-                                        style: const TextStyle(fontSize: 12),
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: _pickToDate,
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 10,
                                       ),
-                                      selected: active,
-                                      onSelected: (_) => setState(
-                                        () => active
-                                            ? _selectedCategories.remove(cat.id)
-                                            : _selectedCategories.add(cat.id),
-                                      ),
-                                      selectedColor: AppColors.primary,
-                                      labelStyle: TextStyle(
-                                        color: active
-                                            ? Colors.white
-                                            : AppColors.inkSoft,
-                                      ),
-                                      backgroundColor: AppColors.bg,
-                                      side: BorderSide(
-                                        color: active
-                                            ? AppColors.primary
-                                            : AppColors.border,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                                if (_selectedCategories.isNotEmpty)
-                                  TextButton(
-                                    onPressed: () => setState(
-                                      () => _selectedCategories.clear(),
-                                    ),
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: const Size(0, 32),
                                     ),
                                     child: Text(
-                                      S.t.clearCategoryFilter,
-                                      style: TextStyle(
-                                        color: AppColors.coral,
-                                        fontSize: 12.5,
-                                      ),
+                                      DateFormat('d/M/yy').format(_to),
+                                      style: const TextStyle(fontSize: 12),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  initialValue: _typeFilter,
+                                  isDense: true,
+                                  isExpanded: true,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.ink,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  items: [
+                                    DropdownMenuItem(
+                                      value: 'all',
+                                      child: Text(S.t.filterAll),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'income',
+                                      child: Text(S.t.statIncome),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'expense',
+                                      child: Text(S.t.statExpense),
+                                    ),
+                                  ],
+                                  onChanged: (v) =>
+                                      setState(() => _typeFilter = v!),
+                                ),
+                              ),
+                              if (_allCategories.isNotEmpty) ...[
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: DropdownButtonFormField<String?>(
+                                    initialValue: _categoryFilter,
+                                    isDense: true,
+                                    isExpanded: true,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.ink,
+                                    ),
+                                    decoration: const InputDecoration(
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 8,
+                                      ),
+                                    ),
+                                    items: [
+                                      DropdownMenuItem(
+                                        value: null,
+                                        child: Text(S.t.filterCategoryAll),
+                                      ),
+                                      ..._allCategories.map(
+                                        (cat) => DropdownMenuItem(
+                                          value: cat.id,
+                                          child: Text(cat.name),
+                                        ),
+                                      ),
+                                    ],
+                                    onChanged: (v) =>
+                                        setState(() => _categoryFilter = v),
+                                  ),
+                                ),
                               ],
                             ],
                           ),
