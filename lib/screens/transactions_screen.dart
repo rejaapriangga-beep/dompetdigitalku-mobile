@@ -327,9 +327,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: _searchCtrl,
+                    style: const TextStyle(fontSize: 12),
                     decoration: InputDecoration(
                       isDense: true,
                       hintText: S.t.searchTransactionHint,
+                      hintStyle: const TextStyle(fontSize: 12),
                       prefixIcon: const Icon(Icons.search, size: 20),
                       suffixIcon: _searchCtrl.text.isEmpty
                           ? null
