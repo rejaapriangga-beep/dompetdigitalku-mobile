@@ -46,4 +46,5 @@ app.*.map.json
 
 # Release signing — jangan pernah commit keystore/kredensialnya.
 /android/key.properties
-/android/keystore/
+/android/keystore/*
+!/android/keystore/README.md

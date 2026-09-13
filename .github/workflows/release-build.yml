@@ -1,0 +1,98 @@
+name: Release Build & Upload
+
+# Build AAB rilis (bertanda tangan pakai upload key asli) dan upload otomatis
+# ke Google Play Console lewat Google Play Developer API — tidak perlu build
+# manual dari laptop lagi. Cuma bisa dipicu manual (workflow_dispatch), BUKAN
+# otomatis tiap push ke main seperti android-build.yml (debug APK) — rilis ke
+# Play Store harus disengaja, bukan tidak sengaja kepicu.
+#
+# Status rilis default "draft": AAB sudah ter-upload & siap, tapi TIDAK
+# langsung live ke pengguna. Kamu tetap perlu buka Play Console dan klik
+# "Publish"/"Review release" manual sebelum benar-benar tayang ke user.
+#
+# Setup yang dibutuhkan (lihat android/keystore/README.md untuk detail):
+# 1. Secret UPLOAD_KEYSTORE_BASE64 — isi base64 dari upload-keystore.jks
+# 2. Secret UPLOAD_KEYSTORE_PASSWORD — password keystore (storePassword ==
+#    keyPassword di setup ini)
+# 3. Secret UPLOAD_KEY_ALIAS — alias key di dalam keystore (contoh: "upload")
+# 4. Secret PLAY_SERVICE_ACCOUNT_JSON — isi file JSON service account Google
+#    Cloud yang sudah diberi akses rilis di Play Console
+
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "Track Play Console tujuan upload"
+        required: false
+        default: "production"
+        type: choice
+        options:
+          - production
+          - internal
+          - alpha
+          - beta
+      status:
+        description: "Status rilis setelah upload"
+        required: false
+        default: "draft"
+        type: choice
+        options:
+          - draft
+          - inProgress
+          - completed
+
+jobs:
+  build-and-upload-aab:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Restore upload keystore
+        run: |
+          mkdir -p android/keystore
+          echo "${{ secrets.UPLOAD_KEYSTORE_BASE64 }}" | base64 -d > android/keystore/upload-keystore.jks
+
+      - name: Create key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.UPLOAD_KEY_ALIAS }}
+          storeFile=../keystore/upload-keystore.jks
+          EOF
+
+      - name: Build release AAB
+        run: flutter build appbundle --release
+
+      - name: Upload AAB as workflow artifact (cadangan/manual jika perlu)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dompetdigitalku-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: id.dompetdigitalku.dompetdigitalku
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: ${{ github.event.inputs.track || 'production' }}
+          status: ${{ github.event.inputs.status || 'draft' }}
