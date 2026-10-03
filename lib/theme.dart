@@ -4,6 +4,7 @@
 // palet mode gelapnya (lihat @media prefers-color-scheme: dark di globals.css).
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Sumber kebenaran tunggal untuk mode gelap/terang — dibaca oleh AppColors
@@ -198,6 +199,21 @@ ThemeData _buildTheme(Brightness brightness) {
       foregroundColor: p.ink,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
+      // Status/navigation bar transparan (bukan diwarnai lewat API native
+      // yang di-deprecate Android 15 untuk edge-to-edge) — area itu tetap
+      // "kelihatan" berwarna sama karena AppBar/Scaffold kita sendiri yang
+      // menggambar sampai ke tepi layar, bukan OS yang mengecat status bar.
+      systemOverlayStyle: isDark
+          ? SystemUiOverlayStyle.light.copyWith(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: p.surface,
+              systemNavigationBarIconBrightness: Brightness.light,
+            )
+          : SystemUiOverlayStyle.dark.copyWith(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: p.surface,
+              systemNavigationBarIconBrightness: Brightness.dark,
+            ),
     ),
     cardTheme: CardThemeData(
       color: p.surface,
