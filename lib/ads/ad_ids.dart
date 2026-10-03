@@ -8,11 +8,13 @@ const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
 // Saklar untuk MEMATIKAN semua iklan AdMob di seluruh app (SDK tidak
 // diinisialisasi, dan BottomBannerAd tidak memuat/menampilkan apa pun).
 //
-// Dinyalakan lagi (3 Okt 2026) untuk tes ulang setelah: (1) upgrade ke
-// Adaptive Banner, dan (2) kategori Gambling + Mature/Adult diblokir
-// lewat Blocking controls di AdMob Console -- sebagai respons atas
-// laporan iklan banner yang AUTO-REDIRECT ke Play Store tanpa tap user
-// (creative dari advertiser "Veil Trace Hunt" dan "77RTPabu", keduanya
-// sudah diblokir juga lewat App install ads). Kalau masalah serupa
-// muncul lagi, matikan lagi switch ini dan tinjau Blocking controls.
-const bool kAdsEnabled = true;
+// Dimatikan lagi (3 Okt 2026) -- percobaan nyalakan ulang setelah upgrade
+// Adaptive Banner + blokir Gambling/Mature/Adult masih kena advertiser
+// auto-redirect (Veil Trace Hunt, 77RTPabu 2x, 55RTVessel berturut-turut
+// dalam waktu singkat), bahkan "77RTPabu" yang SUDAH diblokir tetap
+// muncul lagi -- indikasi blocking controls AdMob belum/butuh waktu
+// propagasi (Google: bisa beberapa jam) sebelum benar-benar efektif.
+// Jangan nyalakan lagi sebelum menunggu blocking (termasuk kategori
+// Games yang baru diblokir) benar-benar berlaku -- verifikasi dulu
+// lewat tes singkat sebelum mengandalkan app ini untuk user asli.
+const bool kAdsEnabled = false;
