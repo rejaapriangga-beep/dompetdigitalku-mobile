@@ -46,7 +46,17 @@ Future<void> main() async {
   // Dimatikan sementara lewat kAdsEnabled (lihat ads/ad_ids.dart) selama
   // masa review 14 hari, untuk mengisolasi dugaan bug layar hitam dari
   // AdMob.
-  if (kAdsEnabled) MobileAds.instance.initialize();
+  if (kAdsEnabled) {
+    MobileAds.instance.initialize();
+    // Batasi rating konten iklan ke "General audiences" di level SDK —
+    // beda dari Blocking controls di AdMob Console (yang kategorinya bisa
+    // salah klasifikasi/butuh waktu propagasi), ini filter yang Google
+    // terapkan di setiap permintaan iklan berdasarkan rating resmi
+    // advertiser-nya. Lapisan tambahan, bukan pengganti Blocking controls.
+    MobileAds.instance.updateRequestConfiguration(
+      RequestConfiguration(maxAdContentRating: MaxAdContentRating.g),
+    );
+  }
   runApp(const DompetDigitalKuApp());
 }
 
