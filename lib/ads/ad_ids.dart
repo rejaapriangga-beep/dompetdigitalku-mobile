@@ -5,9 +5,9 @@
 // "com.google.android.gms.ads.APPLICATION_ID"): ca-app-pub-6278959551618441~6808642386
 const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
 
-// Saklar sementara untuk MEMATIKAN semua iklan AdMob di seluruh app (SDK
-// tidak diinisialisasi, dan BottomBannerAd tidak memuat/menampilkan apa
-// pun) — dipakai untuk mengisolasi dugaan bug layar hitam dari AdMob
-// selama masa review 14 hari. Set kembali ke `true` kalau mau
-// mengaktifkan iklan lagi.
-const bool kAdsEnabled = false;
+// Saklar untuk MEMATIKAN semua iklan AdMob di seluruh app (SDK tidak
+// diinisialisasi, dan BottomBannerAd tidak memuat/menampilkan apa pun) —
+// dulu dipakai untuk mengisolasi dugaan bug layar hitam dari AdMob selama
+// masa review 14 hari closed testing. Fix permanennya sudah ada di
+// MainActivity.kt (RenderMode.texture), jadi iklan diaktifkan lagi.
+const bool kAdsEnabled = true;
