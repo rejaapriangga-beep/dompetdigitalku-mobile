@@ -22,13 +22,28 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
   @override
   void initState() {
     super.initState();
-    if (kAdsEnabled) _loadAd();
+    // Ukuran adaptive banner butuh lebar layar (MediaQuery), yang baru aman
+    // diakses setelah frame pertama selesai di-layout -- makanya ditunda
+    // lewat addPostFrameCallback, bukan dipanggil langsung di sini.
+    if (kAdsEnabled) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadAd());
+    }
   }
 
-  void _loadAd() {
+  Future<void> _loadAd() async {
+    if (!mounted) return;
+    // Adaptive banner (bukan ukuran tetap 320x50) -- otomatis menyesuaikan
+    // lebar penuh layar HP dan sedikit lebih tinggi di layar besar, sesuai
+    // rekomendasi terbaru Google Mobile Ads SDK untuk anchored banner.
+    final width = MediaQuery.sizeOf(context).width.truncate();
+    final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+      width,
+    );
+    if (size == null || !mounted) return;
+
     final ad = BannerAd(
       adUnitId: kBannerAdUnitId,
-      size: AdSize.banner,
+      size: size,
       // Non-personalized ads dulu (belum ada alur consent untuk iklan
       // personalisasi) — lebih sederhana dari sisi kepatuhan privasi.
       request: const AdRequest(nonPersonalizedAds: true),
