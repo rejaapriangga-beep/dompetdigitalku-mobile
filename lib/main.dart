@@ -27,6 +27,12 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  // Edge-to-edge eksplisit (wajib di Android 15+/API 35 — status & navigation
+  // bar jadi transparan dan konten menggambar sampai ke tepi layar sendiri,
+  // bukan lewat API Window.setStatusBarColor/setNavigationBarColor yang sudah
+  // di-deprecate Android untuk tujuan ini). Warna status/nav bar per-tema
+  // diatur lewat AppBarTheme.systemOverlayStyle di theme.dart.
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   // Data format tanggal untuk kedua bahasa (nama bulan dsb.) — dipakai lewat
   // DateFormat(..., LocaleController.instance.isEnglish ? 'en_US' : 'id_ID')
   // di layar-layar yang menampilkan tanggal dalam bentuk teks panjang.
