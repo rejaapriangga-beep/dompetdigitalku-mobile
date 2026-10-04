@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'ads/ad_ids.dart';
+import 'ads/ads_gate.dart';
 import 'api/auth_api.dart';
 import 'biometric/biometric_prefs.dart';
 import 'locale_controller.dart';
@@ -40,13 +41,14 @@ Future<void> main() async {
   await initializeDateFormatting('en_US', null);
   await ThemeController.instance.load();
   await LocaleController.instance.load();
-  // Tidak di-await sengaja — supaya startup aplikasi tidak menunggu SDK
-  // iklan siap; permintaan iklan pertama akan otomatis menunggu sendiri
-  // kalau inisialisasi belum selesai.
-  // Dimatikan sementara lewat kAdsEnabled (lihat ads/ad_ids.dart) selama
-  // masa review 14 hari, untuk mengisolasi dugaan bug layar hitam dari
-  // AdMob.
-  if (kAdsEnabled) {
+  // kAdsEnabled (lihat ads/ad_ids.dart) mematikan iklan total di seluruh
+  // app. AdsGate.adsSupported mengecek Google Play Services -- device tanpa
+  // GMS (mis. Huawei ber-HMS) pernah bikin white screen total saat AdMob
+  // native ad view dirender, jadi iklan di-skip khusus untuk device itu.
+  // Ini satu-satunya await di main() yang menyangkut iklan; sengaja ditunggu
+  // karena cuma cek lokal (bukan network) dan harus selesai SEBELUM SDK
+  // AdMob diinisialisasi sama sekali, bukan cuma sebelum ad pertama dimuat.
+  if (kAdsEnabled && await AdsGate.adsSupported) {
     MobileAds.instance.initialize();
     // Batasi rating konten iklan ke "General audiences" di level SDK —
     // beda dari Blocking controls di AdMob Console (yang kategorinya bisa

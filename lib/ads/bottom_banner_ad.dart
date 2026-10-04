@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../theme.dart';
 import 'ad_ids.dart';
+import 'ads_gate.dart';
 
 class BottomBannerAd extends StatefulWidget {
   const BottomBannerAd({super.key});
@@ -26,8 +27,18 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
     // diakses setelah frame pertama selesai di-layout -- makanya ditunda
     // lewat addPostFrameCallback, bukan dipanggil langsung di sini.
     if (kAdsEnabled) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadAd());
+      WidgetsBinding.instance.addPostFrameCallback((_) => _maybeLoadAd());
     }
+  }
+
+  // Dicek lagi di sini (selain di main.dart sebelum SDK diinisialisasi)
+  // sebagai lapisan aman tambahan -- kalau sampai lolos, widget ini tetap
+  // tidak akan pernah memanggil BannerAd.load() di device tanpa GMS.
+  Future<void> _maybeLoadAd() async {
+    if (!mounted) return;
+    if (!await AdsGate.adsSupported) return;
+    if (!mounted) return;
+    _loadAd();
   }
 
   Future<void> _loadAd() async {
