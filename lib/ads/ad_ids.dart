@@ -22,7 +22,15 @@ const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
 // walau RenderMode.texture sudah dipasang), atau (b) ada masalah lain di
 // implementasi gate-nya sendiri. Belum dikonfirmasi mana yang benar.
 //
-// DIMATIKAN LAGI (ronde 3, 4 Okt 2026) sampai root cause sebenarnya
-// ketemu -- GMS check saja TIDAK CUKUP untuk menjamin device ini aman.
-// Prioritas: konsumen tidak boleh terganggu white screen, iklan nomor dua.
-const bool kAdsEnabled = false;
+// DIMATIKAN (ronde 3, 4 Okt 2026) sampai root cause sebenarnya ketemu --
+// GMS check saja TIDAK CUKUP untuk menjamin device ini aman.
+//
+// DINYALAKAN LAGI khusus di branch ini (ronde 4, 4 Okt 2026) -- BUKAN di
+// main -- untuk APK TES SAJA. ads_gate.dart sekarang ditambah deteksi
+// merek device (Huawei/Honor) sebagai sinyal utama, sebelum cek GMS yang
+// terbukti bisa "ditipu" software emulasi Play Services pihak ketiga.
+// JANGAN merge branch ini ke main sebelum dikonfirmasi lewat tes nyata:
+// (1) di tablet Huawei MatePad 10.4 SE -- harus tetap tidak white screen
+// & tidak ada iklan muncul (brand check harus men-skip), (2) di HP biasa
+// -- iklan harus tampil normal seperti sebelumnya.
+const bool kAdsEnabled = true;
