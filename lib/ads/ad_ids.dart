@@ -17,4 +17,4 @@ const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
 // Jangan nyalakan lagi sebelum menunggu blocking (termasuk kategori
 // Games yang baru diblokir) benar-benar berlaku -- verifikasi dulu
 // lewat tes singkat sebelum mengandalkan app ini untuk user asli.
-const bool kAdsEnabled = false;
+const bool kAdsEnabled = true;
