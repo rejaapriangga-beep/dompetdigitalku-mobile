@@ -75,7 +75,7 @@ dependencies:
   # emulasi Play Services pihak ketiga (umum dipasang di Huawei tanpa GMS
   # resmi), jadi deteksi merek device dipakai sebagai sinyal utama yang
   # lebih sulit dipalsukan. Lihat lib/ads/ads_gate.dart.
-  device_info_plus: ^13.2.0
+  device_info_plus: ^12.4.0
   # Kunci aplikasi pakai sidik jari/Face ID (opsional, diaktifkan lewat
   # toggle di halaman Bantuan) — lihat lib/biometric/.
   local_auth: ^2.3.0
