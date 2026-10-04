@@ -6,17 +6,21 @@
 // di-skip khusus untuk device ini -- device Android lain (mayoritas) dan
 // semua iOS tetap dapat iklan seperti biasa.
 //
-// Dua lapisan cek:
-// 1. Merek device (Huawei/Honor) -- sinyal UTAMA. Cek GMS murni (lapisan 2)
-//    pernah terbukti "ditipu": device tester-nya (Huawei MatePad 10.4 SE)
-//    pakai software emulasi Play Services pihak ketiga yang bikin cek GMS
-//    melaporkan "tersedia" padahal bukan GMS asli -- gate lama jadi salah
-//    lolos dan AdMob tetap crash. Deteksi merek jauh lebih sulit dipalsukan.
-// 2. Ketersediaan Google Play Services -- lapisan tambahan untuk device
-//    non-Huawei yang kebetulan juga tidak punya GMS asli.
+// Sinyal yang dipakai: HANYA merek device (Huawei/Honor) lewat
+// device_info_plus. Sempat dicoba cek ketersediaan Google Play Services
+// (package google_api_availability) sebagai sinyal tambahan, tapi dibuang
+// lagi karena terbukti TIDAK bisa diandalkan di dua arah:
+// - Di tablet Huawei MatePad 10.4 SE, cek ini melaporkan "tersedia" padahal
+//   device itu pakai software emulasi Play Services pihak ketiga (bukan
+//   GMS asli) -- gate jadi salah lolos dan AdMob tetap crash.
+// - Di HP Android biasa (bukan Huawei/Honor, GMS asli terpasang), cek ini
+//   malah gagal/melaporkan "tidak tersedia" -- AdMob jadi tidak pernah
+//   diinisialisasi sama sekali (0 ad request) padahal device ini aman.
+// Deteksi merek device jauh lebih sederhana dan deterministik untuk kasus
+// yang sudah dikonfirmasi nyata (Huawei/Honor), tanpa efek samping di
+// device lain.
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:google_api_availability/google_api_availability.dart';
 
 class AdsGate {
   AdsGate._();
@@ -24,36 +28,26 @@ class AdsGate {
   static Future<bool>? _future;
 
   /// true kalau aman untuk memuat iklan AdMob di device ini. Hasilnya
-  /// di-cache (sekali cek per proses app) karena merek/status GMS tidak
-  /// berubah selama app berjalan.
+  /// di-cache (sekali cek per proses app) karena merek device tidak berubah
+  /// selama app berjalan.
   static Future<bool> get adsSupported => _future ??= _check();
 
   static Future<bool> _check() async {
-    // GMS/HMS murni konsep Android -- di iOS langsung anggap aman.
+    // Huawei/Honor murni soal merek Android -- di iOS langsung anggap aman.
     if (!Platform.isAndroid) return true;
 
     try {
       final info = await DeviceInfoPlugin().androidInfo;
       final manufacturer = info.manufacturer.toLowerCase();
       final brand = info.brand.toLowerCase();
-      if (manufacturer.contains('huawei') ||
+      return !(manufacturer.contains('huawei') ||
           brand.contains('huawei') ||
           manufacturer.contains('honor') ||
-          brand.contains('honor')) {
-        return false;
-      }
+          brand.contains('honor'));
     } catch (_) {
-      // Gagal baca info device -- lanjut ke cek GMS, jangan langsung
-      // anggap gagal total hanya karena lapisan pertama ini error.
-    }
-
-    try {
-      final availability = await GoogleApiAvailability.instance
-          .checkGooglePlayServicesAvailability();
-      return availability == GooglePlayServicesAvailability.success;
-    } catch (_) {
-      // Gagal cek (device tidak lazim/error plugin) -- lebih aman anggap
-      // tidak didukung daripada memaksa load iklan dan berisiko crash lagi.
+      // Gagal baca info device -- lebih aman anggap tidak didukung
+      // daripada memaksa load iklan dan berisiko crash di device yang
+      // tidak lazim.
       return false;
     }
   }
