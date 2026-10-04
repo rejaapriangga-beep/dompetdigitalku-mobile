@@ -8,13 +8,17 @@ const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
 // Saklar untuk MEMATIKAN semua iklan AdMob di seluruh app (SDK tidak
 // diinisialisasi, dan BottomBannerAd tidak memuat/menampilkan apa pun).
 //
-// Dimatikan lagi (3 Okt 2026) -- percobaan nyalakan ulang setelah upgrade
-// Adaptive Banner + blokir Gambling/Mature/Adult masih kena advertiser
-// auto-redirect (Veil Trace Hunt, 77RTPabu 2x, 55RTVessel berturut-turut
-// dalam waktu singkat), bahkan "77RTPabu" yang SUDAH diblokir tetap
-// muncul lagi -- indikasi blocking controls AdMob belum/butuh waktu
-// propagasi (Google: bisa beberapa jam) sebelum benar-benar efektif.
-// Jangan nyalakan lagi sebelum menunggu blocking (termasuk kategori
-// Games yang baru diblokir) benar-benar berlaku -- verifikasi dulu
-// lewat tes singkat sebelum mengandalkan app ini untuk user asli.
-const bool kAdsEnabled = true;
+// Dimatikan lagi (4 Okt 2026) -- ronde tes ke-2 (setelah auto-redirect
+// ronde 1 nampak teratasi, 100% match rate tanpa iklan nakal) malah
+// nemu masalah baru yang lebih parah: WHITE SCREEN total saat app
+// dibuka di tablet Huawei (app sama sekali tidak bisa dipakai).
+// Dugaan kuat: sama kelas bug dengan "layar hitam" lama (komentar di
+// MainActivity.kt soal AdMob hybrid composition bentrok dengan render
+// Flutter di GPU/driver tertentu) -- RenderMode.texture ternyata belum
+// menutup semua kombinasi device/GPU (kemungkinan device tanpa Google
+// Play Services juga berperan, umum di Huawei keluaran baru/HMS).
+// JANGAN nyalakan lagi sebelum root cause-nya jelas DAN ada rencana
+// penanganan yang aman untuk device tanpa Google Play Services --
+// white screen total jauh lebih parah daripada iklan nakal, app jadi
+// tidak bisa dipakai sama sekali.
+const bool kAdsEnabled = false;
