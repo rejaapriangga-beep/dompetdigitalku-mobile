@@ -71,6 +71,11 @@ dependencies:
   # tanpa GMS (umum di Huawei baru/HMS) pernah bikin white screen total saat
   # AdMob native ad view dirender. Lihat lib/ads/ads_gate.dart.
   google_api_availability: ^5.0.0
+  # Baca merek/model device -- cek GMS saja terbukti bisa "ditipu" software
+  # emulasi Play Services pihak ketiga (umum dipasang di Huawei tanpa GMS
+  # resmi), jadi deteksi merek device dipakai sebagai sinyal utama yang
+  # lebih sulit dipalsukan. Lihat lib/ads/ads_gate.dart.
+  device_info_plus: ^13.2.0
   # Kunci aplikasi pakai sidik jari/Face ID (opsional, diaktifkan lewat
   # toggle di halaman Bantuan) — lihat lib/biometric/.
   local_auth: ^2.3.0
