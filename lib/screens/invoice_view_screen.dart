@@ -5,6 +5,7 @@
 // token, server yang redirect ke URL baca sementara).
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import '../ads/bottom_banner_ad.dart';
 import '../l10n/app_strings.dart';
 import '../theme.dart';
 
@@ -31,6 +32,7 @@ class InvoiceViewScreen extends StatelessWidget {
         foregroundColor: Colors.white,
         title: Text(S.t.invoicePhotoLabel),
       ),
+      bottomNavigationBar: const BottomBannerAd(),
       body: Center(
         child: InteractiveViewer(
           minScale: 0.5,

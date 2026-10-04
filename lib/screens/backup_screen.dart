@@ -10,6 +10,7 @@
 // enkripsi yang aman.
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../ads/bottom_banner_ad.dart';
 import '../backup/backup_crypto.dart';
 import '../backup/backup_service.dart';
 import '../l10n/app_strings.dart';
@@ -170,6 +171,7 @@ class _BackupScreenState extends State<BackupScreen> {
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
+      bottomNavigationBar: const BottomBannerAd(),
       body: AbsorbPointer(
         absorbing: _busy,
         child: ListView(
