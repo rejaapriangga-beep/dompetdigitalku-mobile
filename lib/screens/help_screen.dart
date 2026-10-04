@@ -3,6 +3,7 @@
 // biar ringkas — tinggal tap judulnya untuk buka/tutup). Isinya statis,
 // tidak perlu koneksi internet.
 import 'package:flutter/material.dart';
+import '../ads/bottom_banner_ad.dart';
 import '../biometric/biometric_prefs.dart';
 import '../biometric/biometric_service.dart';
 import '../l10n/app_strings.dart';
@@ -78,6 +79,7 @@ class HelpScreen extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
+      bottomNavigationBar: const BottomBannerAd(),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [

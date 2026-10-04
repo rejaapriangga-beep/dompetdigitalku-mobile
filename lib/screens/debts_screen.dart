@@ -1,6 +1,7 @@
 // lib/screens/debts_screen.dart
 // Mirror dari app/debts/page.tsx: kelola utang penuh (tambah, bayar cicilan, hapus).
 import 'package:flutter/material.dart';
+import '../ads/bottom_banner_ad.dart';
 import '../api/data_api.dart';
 import '../l10n/app_strings.dart';
 import '../models/models.dart';
@@ -125,6 +126,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
+      bottomNavigationBar: const BottomBannerAd(),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading

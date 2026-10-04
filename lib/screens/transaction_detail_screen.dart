@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../ads/bottom_banner_ad.dart';
 import '../api/data_api.dart';
 import '../l10n/app_strings.dart';
 import '../locale_controller.dart';
@@ -119,6 +120,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: const BottomBannerAd(),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

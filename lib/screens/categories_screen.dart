@@ -4,6 +4,7 @@
 // bukan ketik bebas) dan Anggaran Bulanan. Dipisah 2 tab (Pengeluaran/
 // Pemasukan) lewat Category.type.
 import 'package:flutter/material.dart';
+import '../ads/bottom_banner_ad.dart';
 import '../api/data_api.dart';
 import '../l10n/app_strings.dart';
 import '../models/models.dart';
@@ -59,6 +60,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             ],
           ),
         ),
+        bottomNavigationBar: const BottomBannerAd(),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : TabBarView(
