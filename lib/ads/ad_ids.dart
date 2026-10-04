@@ -8,18 +8,21 @@ const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
 // Saklar untuk MEMATIKAN semua iklan AdMob di seluruh app (SDK tidak
 // diinisialisasi, dan BottomBannerAd tidak memuat/menampilkan apa pun).
 //
-// Riwayat singkat: dimatikan 4 Okt 2026 karena ronde tes ke-2 nemu WHITE
-// SCREEN total saat app dibuka di tablet Huawei. Sudah dikonfirmasi lewat
-// tes ulang (APK iklan mati di tablet yang sama -- app jalan normal) bahwa
-// ini memang gara-gara AdMob, bukan masalah device Huawei secara umum.
-// Dugaan: AdMob native ad view bentrok dengan render Flutter di device
-// tanpa Google Play Services (umum di Huawei keluaran baru/HMS) --
-// RenderMode.texture di MainActivity.kt belum menutup kombinasi ini.
+// Riwayat singkat: dimatikan 4 Okt 2026 (ronde 1) karena WHITE SCREEN total
+// di tablet Huawei. Tes ulang (APK iklan mati, device sama) mengonfirmasi
+// app jalan normal -- jadi memang gara-gara AdMob.
 //
-// Dinyalakan lagi sekarang (4 Okt 2026) karena sudah ada pengaman baru:
-// ads/ads_gate.dart mengecek ketersediaan Google Play Services SEBELUM
-// SDK AdMob diinisialisasi (lihat main.dart) dan sebelum setiap banner
-// dimuat (lihat bottom_banner_ad.dart). Device tanpa GMS otomatis
-// di-skip (tidak ada SDK init, tidak ada ad load sama sekali) -- iklan
-// hanya jalan di device yang GMS-nya terkonfirmasi tersedia.
-const bool kAdsEnabled = true;
+// Dinyalakan lagi (ronde 2, 4 Okt 2026) dengan ads/ads_gate.dart: cek
+// ketersediaan Google Play Services dulu, device tanpa GMS di-skip dari
+// iklan. Hipotesisnya SALAH atau TIDAK CUKUP -- white screen MASIH muncul
+// di tablet Huawei yang sama setelah ronde 2 ini. Artinya salah satu:
+// (a) tablet ini sebenarnya lolos cek GMS (jadi gate tidak men-skip apa
+// pun, dan bug asli -- AdMob native ad view bentrok dengan render Flutter
+// di GPU/driver tertentu, kelas bug "layar hitam" lama -- muncul lagi
+// walau RenderMode.texture sudah dipasang), atau (b) ada masalah lain di
+// implementasi gate-nya sendiri. Belum dikonfirmasi mana yang benar.
+//
+// DIMATIKAN LAGI (ronde 3, 4 Okt 2026) sampai root cause sebenarnya
+// ketemu -- GMS check saja TIDAK CUKUP untuk menjamin device ini aman.
+// Prioritas: konsumen tidak boleh terganggu white screen, iklan nomor dua.
+const bool kAdsEnabled = false;
