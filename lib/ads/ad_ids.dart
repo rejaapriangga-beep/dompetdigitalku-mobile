@@ -22,7 +22,32 @@ const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
 // walau RenderMode.texture sudah dipasang), atau (b) ada masalah lain di
 // implementasi gate-nya sendiri. Belum dikonfirmasi mana yang benar.
 //
-// DIMATIKAN LAGI (ronde 3, 4 Okt 2026) sampai root cause sebenarnya
-// ketemu -- GMS check saja TIDAK CUKUP untuk menjamin device ini aman.
-// Prioritas: konsumen tidak boleh terganggu white screen, iklan nomor dua.
-const bool kAdsEnabled = false;
+// DIMATIKAN (ronde 3, 4 Okt 2026) sampai root cause sebenarnya ketemu --
+// GMS check saja TIDAK CUKUP untuk menjamin device ini aman.
+//
+// Ronde 4 (4 Okt 2026, APK tes): ads_gate.dart diperbaiki jadi HANYA
+// deteksi merek device (Huawei/Honor), cek GMS dibuang total (terbukti
+// tidak reliable di DUA arah -- lihat riwayat lengkap di ads_gate.dart).
+// Tes nyata mengonfirmasi gate ini SUDAH BENAR: di tablet Huawei MatePad
+// 10.4 SE tetap tidak white screen & tidak ada iklan, di HP biasa iklan
+// berhasil tampil normal (Requests > 0 di AdMob Console).
+//
+// TAPI begitu iklan tampil di HP biasa itu, muncul masalah LAIN yang
+// jauh lebih serius: iklan langsung full-screen SENDIRI tanpa disentuh
+// sama sekali (auto-redirect, persis pola bug "Veil Trace Hunt" dulu),
+// dan tombol Back malah keluar total dari aplikasi alih-alih menutup
+// overlay iklan. Pengiklan kali ini "KreditNavigator-Pinjaman Aman" --
+// pengiklan baru, berarti blocking per-advertiser di AdMob Console
+// cuma reaktif & tidak pernah benar-benar menutup celahnya (sudah
+// terjadi berulang dengan pengiklan berbeda-beda: Veil Trace Hunt,
+// 77RTPabu, 55RTVessel, sekarang KreditNavigator).
+//
+// Keputusan user: TETAP dinyalakan (ronde 5, 4 Okt 2026) meski ada bug
+// auto-redirect KreditNavigator di atas -- sambil dicari mitigasi
+// tambahan di sisi AdMob Console (bukan cuma blocking reaktif per
+// pengiklan). Dugaan kuat dari riset: ini soal pengaturan Mediation/
+// Blocking Console, bukan sesuatu yang bisa diperbaiki dari kode app
+// (lihat PR yang menyertai perubahan ini untuk detail & langkah yang
+// disarankan ke user: cek toggle "Ad filtering" di tiap bidding source,
+// dan audit "Manage Ad networks" di Blocking controls).
+const bool kAdsEnabled = true;
