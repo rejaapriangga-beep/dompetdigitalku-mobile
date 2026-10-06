@@ -5,7 +5,6 @@
 // widget ini tidak menampilkan apa pun — tidak ada ruang kosong yang aneh.
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../theme.dart';
 import 'ad_ids.dart';
 import 'ads_gate.dart';
 
@@ -86,26 +85,32 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
   Widget build(BuildContext context) {
     final ad = _bannerAd;
     if (!_isLoaded || ad == null) return const SizedBox.shrink();
-    return SafeArea(
+    // ADMOB DIAGNOSTIC TEST -- BannerAd.load() dan onAdLoaded/_isLoaded
+    // TETAP jalan seperti biasa (round-trip ke server AdMob tetap terjadi),
+    // tapi AdWidget (native Android Platform View) SENGAJA TIDAK dirender
+    // sama sekali -- diganti placeholder Flutter murni (Container merah).
+    // Tujuan: isolasi apakah "Home jadi putih total" dipicu oleh AdWidget/
+    // Platform View-nya sendiri, atau oleh sesuatu lain yang kebetulan
+    // terjadi bersamaan dengan callback onAdLoaded.
+    // - Kalau Home TETAP NORMAL saat placeholder merah muncul -> AdWidget/
+    //   Platform View native terbukti jadi penyebabnya.
+    // - Kalau Home TETAP JADI PUTIH walau cuma placeholder Flutter biasa
+    //   (bukan AdWidget) -> penyebabnya bukan AdWidget, kemungkinan di
+    //   lifecycle/state lain yang kebetulan trigger bareng onAdLoaded.
+    // UNTUK KEMBALI: hapus blok placeholder di bawah, pakai lagi
+    // SafeArea(top:false) -> SizedBox(width/height ad.size) -> AdWidget(ad).
+    return const SafeArea(
       top: false,
-      child: Container(
+      child: SizedBox(
+        height: 50,
         width: double.infinity,
-        alignment: Alignment.center,
-        color: AppColors.surface,
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        // ClipRect memaksa Flutter memotong hasil gambar native AdView
-        // (dirender lewat Hybrid Composition) persis ke batas SizedBox ini
-        // -- percobaan perbaikan untuk bug "banner tiba-tiba membesar
-        // sendiri memenuhi layar" (dikonfirmasi lewat test ad resmi Google,
-        // jadi bukan soal creative nakal, melainkan bug layout/rendering
-        // platform view). Tanpa ClipRect, kalau native view ini sempat
-        // salah ukur/salah layout, Flutter tidak punya batas tegas untuk
-        // menahan hasil gambarnya di dalam area banner yang seharusnya.
-        child: ClipRect(
-          child: SizedBox(
-            width: ad.size.width.toDouble(),
-            height: ad.size.height.toDouble(),
-            child: AdWidget(ad: ad),
+        child: ColoredBox(
+          color: Colors.red,
+          child: Center(
+            child: Text(
+              'AD TEST PLACEHOLDER',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ),
       ),
