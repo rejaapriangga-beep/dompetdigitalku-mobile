@@ -89,10 +89,20 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
         alignment: Alignment.center,
         color: AppColors.surface,
         padding: const EdgeInsets.symmetric(vertical: 2),
-        child: SizedBox(
-          width: ad.size.width.toDouble(),
-          height: ad.size.height.toDouble(),
-          child: AdWidget(ad: ad),
+        // ClipRect memaksa Flutter memotong hasil gambar native AdView
+        // (dirender lewat Hybrid Composition) persis ke batas SizedBox ini
+        // -- percobaan perbaikan untuk bug "banner tiba-tiba membesar
+        // sendiri memenuhi layar" (dikonfirmasi lewat test ad resmi Google,
+        // jadi bukan soal creative nakal, melainkan bug layout/rendering
+        // platform view). Tanpa ClipRect, kalau native view ini sempat
+        // salah ukur/salah layout, Flutter tidak punya batas tegas untuk
+        // menahan hasil gambarnya di dalam area banner yang seharusnya.
+        child: ClipRect(
+          child: SizedBox(
+            width: ad.size.width.toDouble(),
+            height: ad.size.height.toDouble(),
+            child: AdWidget(ad: ad),
+          ),
         ),
       ),
     );
