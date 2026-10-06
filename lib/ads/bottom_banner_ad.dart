@@ -85,34 +85,18 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
   Widget build(BuildContext context) {
     final ad = _bannerAd;
     if (!_isLoaded || ad == null) return const SizedBox.shrink();
-    // ADMOB DIAGNOSTIC TEST -- BannerAd.load() dan onAdLoaded/_isLoaded
-    // TETAP jalan seperti biasa (round-trip ke server AdMob tetap terjadi),
-    // tapi AdWidget (native Android Platform View) SENGAJA TIDAK dirender
-    // sama sekali -- diganti placeholder Flutter murni (Container merah).
-    // Tujuan: isolasi apakah "Home jadi putih total" dipicu oleh AdWidget/
-    // Platform View-nya sendiri, atau oleh sesuatu lain yang kebetulan
-    // terjadi bersamaan dengan callback onAdLoaded.
-    // - Kalau Home TETAP NORMAL saat placeholder merah muncul -> AdWidget/
-    //   Platform View native terbukti jadi penyebabnya.
-    // - Kalau Home TETAP JADI PUTIH walau cuma placeholder Flutter biasa
-    //   (bukan AdWidget) -> penyebabnya bukan AdWidget, kemungkinan di
-    //   lifecycle/state lain yang kebetulan trigger bareng onAdLoaded.
-    // UNTUK KEMBALI: hapus blok placeholder di bawah, pakai lagi
-    // SafeArea(top:false) -> SizedBox(width/height ad.size) -> AdWidget(ad).
-    return const SafeArea(
+    // ADMOB DIAGNOSTIC TEST -- AdWidget asli dipasang lagi (placeholder
+    // merah sebelumnya sudah mengonfirmasi AdWidget/Platform View yang jadi
+    // penyebab layar putih, bukan state/lifecycle lain). Sekarang menguji
+    // apakah MainActivity.kt tanpa RenderMode.texture (lihat perubahan di
+    // sana) menghilangkan bug ini -- pola render di sini sengaja
+    // disederhanakan ke pola resmi Google (tanpa ClipRect) sesuai saran.
+    return SafeArea(
       top: false,
       child: SizedBox(
-        height: 50,
-        width: double.infinity,
-        child: ColoredBox(
-          color: Colors.red,
-          child: Center(
-            child: Text(
-              'AD TEST PLACEHOLDER',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
+        width: ad.size.width.toDouble(),
+        height: ad.size.height.toDouble(),
+        child: AdWidget(ad: ad),
       ),
     );
   }

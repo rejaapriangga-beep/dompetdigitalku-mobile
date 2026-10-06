@@ -1,28 +1,20 @@
 package id.dompetdigitalku.dompetdigitalku
 
 import io.flutter.embedding.android.FlutterFragmentActivity
-import io.flutter.embedding.android.RenderMode
 
 // FlutterFragmentActivity (bukan FlutterActivity biasa) — dibutuhkan paket
 // local_auth supaya BiometricPrompt Android bisa ditampilkan (fitur kunci
-// sidik jari, lihat lib/biometric/). FlutterFragmentActivity tetap turunan
-// dari FlutterActivity, jadi semua override di bawah ini tetap berlaku sama.
-class MainActivity : FlutterFragmentActivity() {
-    // Mode render default Flutter ("surface") menggambar ke SurfaceView
-    // terpisah yang di-composite langsung oleh hardware compositor, DI LUAR
-    // urutan Z normal View Android — sementara banner AdMob (AdWidget dari
-    // paket google_mobile_ads) dipasang lewat Hybrid Composition, yaitu
-    // View Android asli yang disisipkan langsung ke hierarki. Di sejumlah
-    // GPU/driver (termasuk yang dipakai untuk uji coba app ini), kombinasi
-    // ini bisa membuat View native banner iklan ter-composite DI ATAS
-    // SurfaceView Flutter walau z-index-nya seharusnya di bawah — jadi
-    // seluruh konten Flutter (termasuk loading spinner) tertutup total,
-    // dan baru "muncul" lagi begitu ada trigger lain yang memaksa
-    // compositor menggambar ulang.
-    //
-    // Ganti ke mode "texture": FlutterView jadi TextureView biasa yang
-    // ikut aturan Z normal View Android, jadi tidak bisa lagi tertimpa oleh
-    // platform view lain seperti ini. Sedikit lebih berat di rendering,
-    // tapi tidak masalah untuk app yang kontennya bukan game/animasi berat.
-    override fun getRenderMode(): RenderMode = RenderMode.texture
-}
+// sidik jari, lihat lib/biometric/).
+//
+// ADMOB DIAGNOSTIC TEST -- override getRenderMode() ke RenderMode.texture
+// SEMENTARA DIHAPUS (bukan dihapus permanen) untuk menguji apakah
+// kombinasi RenderMode.texture + AdWidget (Android Platform View dari
+// google_mobile_ads) di device Android 16 (OPPO Reno12 F, Snapdragon 685)
+// justru yang menyebabkan bug "konten Flutter jadi putih total begitu
+// AdWidget selesai load" -- sudah dikonfirmasi lewat test sebelumnya
+// bahwa AdWidget/Platform View adalah pemicunya; sekarang diuji apakah
+// RenderMode.texture ikut berkontribusi pada device spesifik ini.
+// UNTUK KEMBALI: tambahkan lagi
+// `import io.flutter.embedding.android.RenderMode` dan
+// `override fun getRenderMode(): RenderMode = RenderMode.texture`.
+class MainActivity : FlutterFragmentActivity()
