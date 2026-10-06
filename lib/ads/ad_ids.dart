@@ -3,7 +3,19 @@
 //
 // App ID (dipasang di android/app/src/main/AndroidManifest.xml, meta-data
 // "com.google.android.gms.ads.APPLICATION_ID"): ca-app-pub-6278959551618441~6808642386
-const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
+//
+// ADMOB DIAGNOSTIC TEST (4 Okt 2026) -- SEMENTARA diganti ke test ad unit
+// resmi Google untuk Anchored Adaptive Banner Android
+// (ca-app-pub-3940256099942544/9214589741), iklan sintetis dari Google
+// sendiri yang pasti bersih dari creative nakal. Tujuannya mengisolasi
+// apakah bug auto-redirect full-screen (lihat riwayat panjang di
+// kAdsEnabled di bawah) berasal dari creative/ad-serving live atau dari
+// kode app -- investigasi sebelumnya sudah mengonfirmasi tidak ada kode
+// InterstitialAd/RewardedAd/AppOpenAd/Timer mencurigakan di app ini sama
+// sekali, cuma BannerAd biasa.
+// UNTUK KEMBALI KE PRODUCTION: ganti baris di bawah balik ke
+// 'ca-app-pub-6278959551618441/5335778610' (satu baris saja).
+const String kBannerAdUnitId = 'ca-app-pub-3940256099942544/9214589741';
 
 // Saklar untuk MEMATIKAN semua iklan AdMob di seluruh app (SDK tidak
 // diinisialisasi, dan BottomBannerAd tidak memuat/menampilkan apa pun).
