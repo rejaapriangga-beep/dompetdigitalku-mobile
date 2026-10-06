@@ -43,14 +43,18 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
 
   Future<void> _loadAd() async {
     if (!mounted) return;
-    // Adaptive banner (bukan ukuran tetap 320x50) -- otomatis menyesuaikan
-    // lebar penuh layar HP dan sedikit lebih tinggi di layar besar, sesuai
-    // rekomendasi terbaru Google Mobile Ads SDK untuk anchored banner.
-    final width = MediaQuery.sizeOf(context).width.truncate();
-    final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-      width,
-    );
-    if (size == null || !mounted) return;
+    // ADMOB DIAGNOSTIC TEST -- SEMENTARA balik ke ukuran banner TETAP
+    // (AdSize.banner, 320x50) alih-alih Adaptive Banner. Adaptive banner
+    // butuh 1 round-trip platform-channel async tambahan
+    // (AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize) SEBELUM
+    // BannerAd dibuat -- dicoba dihilangkan untuk lihat apakah round-trip
+    // ekstra ini ikut berkontribusi ke race condition "layar putih total,
+    // cuma banner yang tetap tampil" yang masih terjadi walau
+    // RenderMode.texture dan EnableImpeller=false sudah dipasang.
+    // UNTUK KEMBALI: ganti balik ke
+    // `final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);`
+    const size = AdSize.banner;
+    if (!mounted) return;
 
     final ad = BannerAd(
       adUnitId: kBannerAdUnitId,
