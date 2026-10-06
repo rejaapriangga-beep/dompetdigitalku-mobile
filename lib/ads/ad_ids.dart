@@ -25,12 +25,28 @@ const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
 // DIMATIKAN (ronde 3, 4 Okt 2026) sampai root cause sebenarnya ketemu --
 // GMS check saja TIDAK CUKUP untuk menjamin device ini aman.
 //
-// DINYALAKAN LAGI khusus di branch ini (ronde 4, 4 Okt 2026) -- BUKAN di
-// main -- untuk APK TES SAJA. ads_gate.dart sekarang ditambah deteksi
-// merek device (Huawei/Honor) sebagai sinyal utama, sebelum cek GMS yang
-// terbukti bisa "ditipu" software emulasi Play Services pihak ketiga.
-// JANGAN merge branch ini ke main sebelum dikonfirmasi lewat tes nyata:
-// (1) di tablet Huawei MatePad 10.4 SE -- harus tetap tidak white screen
-// & tidak ada iklan muncul (brand check harus men-skip), (2) di HP biasa
-// -- iklan harus tampil normal seperti sebelumnya.
-const bool kAdsEnabled = true;
+// Ronde 4 (4 Okt 2026, APK tes): ads_gate.dart diperbaiki jadi HANYA
+// deteksi merek device (Huawei/Honor), cek GMS dibuang total (terbukti
+// tidak reliable di DUA arah -- lihat riwayat lengkap di ads_gate.dart).
+// Tes nyata mengonfirmasi gate ini SUDAH BENAR: di tablet Huawei MatePad
+// 10.4 SE tetap tidak white screen & tidak ada iklan, di HP biasa iklan
+// berhasil tampil normal (Requests > 0 di AdMob Console).
+//
+// TAPI begitu iklan tampil di HP biasa itu, muncul masalah LAIN yang
+// jauh lebih serius: iklan langsung full-screen SENDIRI tanpa disentuh
+// sama sekali (auto-redirect, persis pola bug "Veil Trace Hunt" dulu),
+// dan tombol Back malah keluar total dari aplikasi alih-alih menutup
+// overlay iklan. Pengiklan kali ini "KreditNavigator-Pinjaman Aman" --
+// pengiklan baru, berarti blocking per-advertiser di AdMob Console
+// cuma reaktif & tidak pernah benar-benar menutup celahnya (sudah
+// terjadi berulang dengan pengiklan berbeda-beda: Veil Trace Hunt,
+// 77RTPabu, 55RTVessel, sekarang KreditNavigator).
+//
+// DIMATIKAN LAGI (ronde 5, 4 Okt 2026) karena masalah ini -- BUKAN soal
+// Huawei lagi (brand-check di ads_gate.dart sudah terbukti benar dan
+// tetap dipertahankan untuk kapan pun iklan dinyalakan lagi), tapi soal
+// kualitas inventory iklan AdMob sendiri yang berulang kali mengganggu
+// pengguna lewat auto-redirect. Prioritas: konsumen tidak boleh
+// terganggu -- ini butuh keputusan lebih lanjut sebelum dinyalakan lagi
+// (mis. ganti jaringan iklan, atau terima risiko dgn mitigasi reaktif).
+const bool kAdsEnabled = false;
