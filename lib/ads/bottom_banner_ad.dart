@@ -42,18 +42,17 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
 
   Future<void> _loadAd() async {
     if (!mounted) return;
-    // ADMOB DIAGNOSTIC TEST -- SEMENTARA balik ke ukuran banner TETAP
-    // (AdSize.banner, 320x50) alih-alih Adaptive Banner. Adaptive banner
-    // butuh 1 round-trip platform-channel async tambahan
-    // (AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize) SEBELUM
-    // BannerAd dibuat -- dicoba dihilangkan untuk lihat apakah round-trip
-    // ekstra ini ikut berkontribusi ke race condition "layar putih total,
-    // cuma banner yang tetap tampil" yang masih terjadi walau
-    // RenderMode.texture dan EnableImpeller=false sudah dipasang.
-    // UNTUK KEMBALI: ganti balik ke
-    // `final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);`
-    const size = AdSize.banner;
-    if (!mounted) return;
+    // Adaptive banner (bukan ukuran tetap 320x50) -- otomatis menyesuaikan
+    // lebar penuh layar HP dan sedikit lebih tinggi di layar besar, sesuai
+    // rekomendasi terbaru Google Mobile Ads SDK untuk anchored banner.
+    // (Sempat diganti sementara ke AdSize.banner saat proses isolasi bug
+    // layar putih -- root cause-nya ternyata RenderMode.texture di
+    // MainActivity.kt, bukan ukuran banner ini, jadi dikembalikan.)
+    final width = MediaQuery.sizeOf(context).width.truncate();
+    final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+      width,
+    );
+    if (size == null || !mounted) return;
 
     final ad = BannerAd(
       adUnitId: kBannerAdUnitId,
@@ -85,12 +84,6 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
   Widget build(BuildContext context) {
     final ad = _bannerAd;
     if (!_isLoaded || ad == null) return const SizedBox.shrink();
-    // ADMOB DIAGNOSTIC TEST -- AdWidget asli dipasang lagi (placeholder
-    // merah sebelumnya sudah mengonfirmasi AdWidget/Platform View yang jadi
-    // penyebab layar putih, bukan state/lifecycle lain). Sekarang menguji
-    // apakah MainActivity.kt tanpa RenderMode.texture (lihat perubahan di
-    // sana) menghilangkan bug ini -- pola render di sini sengaja
-    // disederhanakan ke pola resmi Google (tanpa ClipRect) sesuai saran.
     return SafeArea(
       top: false,
       child: SizedBox(
