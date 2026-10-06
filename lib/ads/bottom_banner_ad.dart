@@ -5,7 +5,6 @@
 // widget ini tidak menampilkan apa pun — tidak ada ruang kosong yang aneh.
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../theme.dart';
 import 'ad_ids.dart';
 import 'ads_gate.dart';
 
@@ -46,6 +45,9 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
     // Adaptive banner (bukan ukuran tetap 320x50) -- otomatis menyesuaikan
     // lebar penuh layar HP dan sedikit lebih tinggi di layar besar, sesuai
     // rekomendasi terbaru Google Mobile Ads SDK untuk anchored banner.
+    // (Sempat diganti sementara ke AdSize.banner saat proses isolasi bug
+    // layar putih -- root cause-nya ternyata RenderMode.texture di
+    // MainActivity.kt, bukan ukuran banner ini, jadi dikembalikan.)
     final width = MediaQuery.sizeOf(context).width.truncate();
     final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
       width,
@@ -84,16 +86,10 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
     if (!_isLoaded || ad == null) return const SizedBox.shrink();
     return SafeArea(
       top: false,
-      child: Container(
-        width: double.infinity,
-        alignment: Alignment.center,
-        color: AppColors.surface,
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: SizedBox(
-          width: ad.size.width.toDouble(),
-          height: ad.size.height.toDouble(),
-          child: AdWidget(ad: ad),
-        ),
+      child: SizedBox(
+        width: ad.size.width.toDouble(),
+        height: ad.size.height.toDouble(),
+        child: AdWidget(ad: ad),
       ),
     );
   }
