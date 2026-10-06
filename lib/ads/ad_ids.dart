@@ -42,11 +42,12 @@ const String kBannerAdUnitId = 'ca-app-pub-6278959551618441/5335778610';
 // terjadi berulang dengan pengiklan berbeda-beda: Veil Trace Hunt,
 // 77RTPabu, 55RTVessel, sekarang KreditNavigator).
 //
-// DIMATIKAN LAGI (ronde 5, 4 Okt 2026) karena masalah ini -- BUKAN soal
-// Huawei lagi (brand-check di ads_gate.dart sudah terbukti benar dan
-// tetap dipertahankan untuk kapan pun iklan dinyalakan lagi), tapi soal
-// kualitas inventory iklan AdMob sendiri yang berulang kali mengganggu
-// pengguna lewat auto-redirect. Prioritas: konsumen tidak boleh
-// terganggu -- ini butuh keputusan lebih lanjut sebelum dinyalakan lagi
-// (mis. ganti jaringan iklan, atau terima risiko dgn mitigasi reaktif).
-const bool kAdsEnabled = false;
+// Keputusan user: TETAP dinyalakan (ronde 5, 4 Okt 2026) meski ada bug
+// auto-redirect KreditNavigator di atas -- sambil dicari mitigasi
+// tambahan di sisi AdMob Console (bukan cuma blocking reaktif per
+// pengiklan). Dugaan kuat dari riset: ini soal pengaturan Mediation/
+// Blocking Console, bukan sesuatu yang bisa diperbaiki dari kode app
+// (lihat PR yang menyertai perubahan ini untuk detail & langkah yang
+// disarankan ke user: cek toggle "Ad filtering" di tiap bidding source,
+// dan audit "Manage Ad networks" di Blocking controls).
+const bool kAdsEnabled = true;
