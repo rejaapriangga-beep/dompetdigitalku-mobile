@@ -9,6 +9,7 @@ import '../models/models.dart';
 import '../theme.dart';
 import '../widgets/currency_field.dart';
 import '../widgets/stat_card.dart';
+import '../widgets/top_menu_bar.dart';
 import 'transactions_screen.dart' show rp;
 import 'debts_screen.dart';
 import 'investments_screen.dart';
@@ -227,30 +228,37 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
             ],
           ),
         ),
-        body: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  if (_error != null)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                      child: Text(
-                        _error!,
-                        style: TextStyle(color: AppColors.coral),
-                      ),
-                    ),
-                  Expanded(
-                    child: TabBarView(
+        body: Column(
+          children: [
+            const TopMenuBar(current: TopMenuDestination.assets),
+            Expanded(
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
                       children: [
-                        _buildAkunKasTab(),
-                        _buildAsetTetapTab(),
-                        _buildInvestasiTab(),
-                        _buildUtangTab(),
+                        if (_error != null)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                            child: Text(
+                              _error!,
+                              style: TextStyle(color: AppColors.coral),
+                            ),
+                          ),
+                        Expanded(
+                          child: TabBarView(
+                            children: [
+                              _buildAkunKasTab(),
+                              _buildAsetTetapTab(),
+                              _buildInvestasiTab(),
+                              _buildUtangTab(),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                ],
-              ),
+            ),
+          ],
+        ),
         bottomNavigationBar: const BottomBannerAd(),
       ),
     );

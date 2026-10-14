@@ -9,6 +9,7 @@ import '../l10n/app_strings.dart';
 import '../locale_controller.dart';
 import '../models/models.dart';
 import '../theme.dart';
+import '../widgets/top_menu_bar.dart';
 import 'login_screen.dart';
 import 'transactions_screen.dart';
 import 'accounts_assets_screen.dart';
@@ -224,38 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          _TopMenuBar(
-            items: [
-              _MenuItem(
-                icon: Icons.swap_horiz,
-                color: AppColors.primary,
-                label: S.t.menuTransactions,
-                shortLabel: S.t.menuTransactions,
-                onTap: () => _openMenu(const TransactionsScreen()),
-              ),
-              _MenuItem(
-                icon: Icons.account_balance_wallet_outlined,
-                color: AppColors.gold,
-                label: S.t.menuAssets,
-                shortLabel: S.t.menuAssets,
-                onTap: () => _openMenu(const AccountsAssetsScreen()),
-              ),
-              _MenuItem(
-                icon: Icons.pie_chart_outline,
-                color: AppColors.plum,
-                label: S.t.menuBudget,
-                shortLabel: S.t.menuBudget,
-                onTap: () => _openMenu(const BudgetsScreen()),
-              ),
-              _MenuItem(
-                icon: Icons.bar_chart,
-                color: AppColors.teal,
-                label: S.t.menuReportsFull,
-                shortLabel: S.t.menuReportsShort,
-                onTap: () => _openMenu(const ReportsScreen()),
-              ),
-            ],
-          ),
+          const TopMenuBar(),
           Expanded(child: _buildBody()),
         ],
       ),
@@ -625,7 +595,7 @@ class _BudgetHomeSummary extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           // Diberi rona plum (warna yang sama dipakai ikon menu "Anggaran"
-          // di _TopMenuBar) supaya card ini punya identitas warna sendiri,
+          // di TopMenuBar) supaya card ini punya identitas warna sendiri,
           // beda dari card netral lainnya — warna status (hijau/kuning/
           // merah) tetap dipakai di ikon, progress bar, dan badge persen.
           color: AppColors.plum.withValues(alpha: 0.08),
@@ -717,86 +687,3 @@ class _BudgetHomeSummary extends StatelessWidget {
   }
 }
 
-class _MenuItem {
-  final IconData icon;
-  final Color color;
-  final String label;
-  final String shortLabel;
-  final VoidCallback onTap;
-  _MenuItem({
-    required this.icon,
-    required this.color,
-    required this.label,
-    required this.shortLabel,
-    required this.onTap,
-  });
-}
-
-/// Menu utama, sekarang berupa baris ikon statis di atas (tidak ikut
-/// scroll) — beda dari sebelumnya yang berupa grid di bagian bawah halaman.
-/// Tiap ikon punya label singkat yang selalu terlihat di dalam kartunya
-/// (bukan cuma muncul saat ditekan-tahan) supaya langsung jelas menu apa.
-/// Baris menu di atas, sekarang selalu muat 1 baris tanpa perlu digeser ke
-/// samping (jumlah menunya sudah dikurangi jadi 4 saja — Investasi ikut
-/// masuk ke halaman Aset & Utang, Kesehatan Keuangan jadi tab di Laporan,
-/// Utang & Kategori sudah bisa diakses dari halaman lain).
-class _TopMenuBar extends StatelessWidget {
-  final List<_MenuItem> items;
-  const _TopMenuBar({required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(bottom: BorderSide(color: AppColors.border)),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      child: Row(
-        children: items
-            .map(
-              (item) => Expanded(
-                child: Tooltip(
-                  message: item.label,
-                  child: InkWell(
-                    onTap: item.onTap,
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: item.color.withValues(alpha: 0.14),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(item.icon, size: 22, color: item.color),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.shortLabel,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w600,
-                              color: item.color,
-                              height: 1.15,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            )
-            .toList(),
-      ),
-    );
-  }
-}

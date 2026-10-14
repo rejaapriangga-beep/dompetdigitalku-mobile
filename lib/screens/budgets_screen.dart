@@ -17,6 +17,7 @@ import '../locale_controller.dart';
 import '../models/models.dart';
 import '../theme.dart';
 import '../widgets/currency_field.dart';
+import '../widgets/top_menu_bar.dart';
 import 'categories_screen.dart';
 import 'transactions_screen.dart' show rp;
 
@@ -198,9 +199,16 @@ class _BudgetsScreenState extends State<BudgetsScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [_buildSetTab(), _buildHistoryTab()],
+      body: Column(
+        children: [
+          const TopMenuBar(current: TopMenuDestination.budgets),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [_buildSetTab(), _buildHistoryTab()],
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: const BottomBannerAd(),
     );

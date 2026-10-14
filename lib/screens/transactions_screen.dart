@@ -14,6 +14,7 @@ import '../storage/local_invoice_store.dart';
 import '../storage/token_storage.dart';
 import '../theme.dart';
 import '../widgets/currency_field.dart';
+import '../widgets/top_menu_bar.dart';
 import 'login_screen.dart';
 import 'accounts_assets_screen.dart';
 import 'budgets_screen.dart';
@@ -274,7 +275,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      body: RefreshIndicator(
+      body: Column(
+        children: [
+          const TopMenuBar(current: TopMenuDestination.transactions),
+          Expanded(
+            child: RefreshIndicator(
         onRefresh: _load,
         child: _loading
             ? const Center(child: CircularProgressIndicator())
@@ -439,6 +444,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     ),
                 ],
               ),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: const BottomBannerAd(),
     );

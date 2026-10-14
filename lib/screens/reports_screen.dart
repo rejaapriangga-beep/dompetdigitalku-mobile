@@ -11,6 +11,7 @@ import '../l10n/app_strings.dart';
 import '../models/models.dart';
 import '../theme.dart';
 import '../widgets/stat_card.dart';
+import '../widgets/top_menu_bar.dart';
 import 'health_screen.dart';
 import 'transactions_screen.dart' show rp;
 
@@ -200,7 +201,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
             ],
           ),
         ),
-        body: TabBarView(
+        body: Column(
+          children: [
+            const TopMenuBar(current: TopMenuDestination.reports),
+            Expanded(
+              child: TabBarView(
           children: [
             RefreshIndicator(
               onRefresh: _load,
@@ -660,6 +665,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     ),
             ),
             const HealthContent(),
+          ],
+              ),
+            ),
           ],
         ),
         bottomNavigationBar: const BottomBannerAd(),
