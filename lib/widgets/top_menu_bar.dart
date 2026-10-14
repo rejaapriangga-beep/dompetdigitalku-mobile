@@ -1,9 +1,9 @@
 // lib/widgets/top_menu_bar.dart
-// Baris menu utama (Transaksi/Aset, Investasi & Utang/Anggaran/Laporan) —
-// awalnya cuma ada di Beranda (lib/screens/home_screen.dart), sekarang
-// diekstrak ke sini supaya bisa dipasang juga di halaman-halaman utama
-// lainnya, sehingga pengguna bisa pindah antar menu dari halaman mana pun
-// tanpa harus balik ke Beranda dulu.
+// Baris menu utama (Beranda/Transaksi/Aset, Investasi & Utang/Anggaran/
+// Laporan) — awalnya cuma ada di Beranda (lib/screens/home_screen.dart),
+// sekarang diekstrak ke sini supaya bisa dipasang juga di halaman-halaman
+// utama lainnya, sehingga pengguna bisa pindah antar menu dari halaman
+// mana pun tanpa harus balik ke Beranda dulu.
 import 'package:flutter/material.dart';
 import '../l10n/app_strings.dart';
 import '../theme.dart';
@@ -12,11 +12,10 @@ import '../screens/accounts_assets_screen.dart';
 import '../screens/budgets_screen.dart';
 import '../screens/reports_screen.dart';
 
-/// Menandai halaman mana (di antara 4 item menu) yang sedang aktif, supaya
+/// Menandai halaman mana (di antara 5 item menu) yang sedang aktif, supaya
 /// bisa ditandai visual dan tap-nya di-skip (tidak perlu navigasi ke diri
-/// sendiri). `null` dipakai di Beranda, karena Beranda bukan salah satu
-/// dari 4 item ini.
-enum TopMenuDestination { transactions, assets, budgets, reports }
+/// sendiri).
+enum TopMenuDestination { home, transactions, assets, budgets, reports }
 
 class TopMenuBar extends StatelessWidget {
   final TopMenuDestination? current;
@@ -34,9 +33,27 @@ class TopMenuBar extends StatelessWidget {
     ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
   }
 
+  /// Beranda selalu jadi satu-satunya route paling bawah di navigation
+  /// stack (lihat main.dart: HomeScreen tidak pernah di-push, tapi jadi
+  /// `MaterialApp.home` / hasil pushReplacement dari BiometricLockScreen).
+  /// Jadi dari halaman mana pun (yang selalu berjarak 1 route dari
+  /// Beranda), cukup pop sekali untuk balik — tidak perlu push instance
+  /// Beranda yang baru (state-nya, mis. hasil _load(), ikut terjaga).
+  void _goHome(BuildContext context) {
+    if (current == TopMenuDestination.home) return;
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final items = [
+      _Item(
+        dest: TopMenuDestination.home,
+        icon: Icons.home_outlined,
+        color: AppColors.sky,
+        label: S.t.home,
+        onTap: () => _goHome(context),
+      ),
       _Item(
         dest: TopMenuDestination.transactions,
         icon: Icons.swap_horiz,
