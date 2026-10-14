@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          const TopMenuBar(),
+          const TopMenuBar(current: TopMenuDestination.home),
           Expanded(child: _buildBody()),
         ],
       ),
