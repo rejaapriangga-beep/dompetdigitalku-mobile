@@ -8,6 +8,7 @@ import '../api/data_api.dart';
 import '../l10n/app_strings.dart';
 import '../locale_controller.dart';
 import '../models/models.dart';
+import '../route_observer.dart';
 import '../theme.dart';
 import '../widgets/top_menu_bar.dart';
 import 'login_screen.dart';
@@ -28,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 
 String _monthKey(DateTime d) => '${d.year}-${d.month}';
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with RouteAware {
   List<Transaction> _transactions = [];
   List<Account> _accounts = [];
   List<Investment> _investments = [];
@@ -45,6 +46,24 @@ class _HomeScreenState extends State<HomeScreen> {
     _load();
     _maybeShowOnboarding();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route != null) routeObserver.subscribe(this, route);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  // Beranda tampil lagi setelah halaman di atasnya ditutup (tombol back
+  // atau tap "Beranda" di TopMenuBar) — refresh ringkasannya.
+  @override
+  void didPopNext() => _load();
 
   Future<void> _maybeShowOnboarding() async {
     if (!await OnboardingScreen.shouldShow()) return;
@@ -141,9 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _openMenu(Widget screen) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => screen)).then((_) => _load());
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
   }
 
   void _openAddTransaction() {
