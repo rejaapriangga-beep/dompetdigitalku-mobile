@@ -213,24 +213,24 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
             S.t.assetsDebtScreenTitle,
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
-          bottom: TabBar(
-            isScrollable: false,
-            labelStyle: const TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w600,
-            ),
-            unselectedLabelStyle: const TextStyle(fontSize: 12.5),
-            tabs: [
-              Tab(text: S.t.tabCashAccounts),
-              Tab(text: S.t.statFixedAssets),
-              Tab(text: S.t.statInvestments),
-              Tab(text: S.t.tabDebts),
-            ],
-          ),
         ),
         body: Column(
           children: [
             const TopMenuBar(current: TopMenuDestination.assets),
+            TabBar(
+              isScrollable: false,
+              labelStyle: const TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: const TextStyle(fontSize: 12.5),
+              tabs: [
+                Tab(text: S.t.tabCashAccounts),
+                Tab(text: S.t.statFixedAssets),
+                Tab(text: S.t.statInvestments),
+                Tab(text: S.t.tabDebts),
+              ],
+            ),
             Expanded(
               child: _loading
                   ? const Center(child: CircularProgressIndicator())

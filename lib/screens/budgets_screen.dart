@@ -191,17 +191,17 @@ class _BudgetsScreenState extends State<BudgetsScreen>
             child: Text(S.t.manageCategoryLink),
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: S.t.budgetTabSet),
-            Tab(text: S.t.budgetTabHistory),
-          ],
-        ),
       ),
       body: Column(
         children: [
           const TopMenuBar(current: TopMenuDestination.budgets),
+          TabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(text: S.t.budgetTabSet),
+              Tab(text: S.t.budgetTabHistory),
+            ],
+          ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
