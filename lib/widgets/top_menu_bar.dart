@@ -21,27 +21,25 @@ class TopMenuBar extends StatelessWidget {
   final TopMenuDestination? current;
   const TopMenuBar({super.key, this.current});
 
+  // Invariant: stack selalu [Beranda] atau [Beranda, satu halaman menu].
+  // Dari Beranda harus push (bukan pushReplacement) — kalau Beranda ikut
+  // terganti, stack jadi tanpa Beranda dan pop() berikutnya mengosongkan
+  // navigator (layar hitam). Antar halaman non-Beranda pakai pushReplacement
+  // supaya riwayat tidak menumpuk.
   void _go(BuildContext context, TopMenuDestination dest, Widget screen) {
     if (dest == current) return;
-    // Dipakai dari dalam salah satu dari 4 halaman tujuan ini sendiri (bukan
-    // dari Beranda) — pakai pushReplacement supaya pindah menu dari menu
-    // terasa seperti ganti tab, bukan numpuk riwayat navigasi tanpa henti.
-    // Beranda tetap pakai Navigator.push biasa (lihat home_screen.dart) agar
-    // tombol kembali selalu mengarah balik ke Beranda.
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
+    final nav = Navigator.of(context);
+    final route = MaterialPageRoute(builder: (_) => screen);
+    if (current == TopMenuDestination.home) {
+      nav.push(route);
+    } else {
+      nav.pushReplacement(route);
+    }
   }
 
-  /// Beranda selalu jadi satu-satunya route paling bawah di navigation
-  /// stack (lihat main.dart: HomeScreen tidak pernah di-push, tapi jadi
-  /// `MaterialApp.home` / hasil pushReplacement dari BiometricLockScreen).
-  /// Jadi dari halaman mana pun (yang selalu berjarak 1 route dari
-  /// Beranda), cukup pop sekali untuk balik — tidak perlu push instance
-  /// Beranda yang baru (state-nya, mis. hasil _load(), ikut terjaga).
   void _goHome(BuildContext context) {
     if (current == TopMenuDestination.home) return;
-    Navigator.of(context).pop();
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override

@@ -9,6 +9,7 @@ import 'ads/ads_gate.dart';
 import 'api/auth_api.dart';
 import 'biometric/biometric_prefs.dart';
 import 'locale_controller.dart';
+import 'route_observer.dart';
 import 'screens/biometric_lock_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -76,6 +77,7 @@ class DompetDigitalKuApp extends StatelessWidget {
             return MaterialApp(
               title: 'DompetDigitalKu',
               debugShowCheckedModeBanner: false,
+              navigatorObservers: [routeObserver],
               themeMode: mode,
               theme: buildAppTheme(),
               darkTheme: buildDarkAppTheme(),
