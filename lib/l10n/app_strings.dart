@@ -175,6 +175,7 @@ class AppStringsData {
     required this.filterCategoryAll,
     required this.searchTransactionHint,
     required this.clearCategoryFilter,
+    required this.clearDateFilter,
     required this.statBalanceNet,
     required this.categoryBreakdownTitle,
     required this.noDataInRange,
@@ -511,6 +512,7 @@ class AppStringsData {
   final String filterCategoryAll;
   final String searchTransactionHint;
   final String clearCategoryFilter;
+  final String clearDateFilter;
   final String statBalanceNet;
   final String categoryBreakdownTitle;
   final String noDataInRange;
@@ -976,6 +978,7 @@ const _id = AppStringsData(
   filterCategoryAll: 'Semua Kategori',
   searchTransactionHint: 'Cari nama transaksi...',
   clearCategoryFilter: 'Bersihkan pilihan kategori',
+  clearDateFilter: 'Bersihkan filter tanggal',
   statBalanceNet: 'Saldo Bersih',
   categoryBreakdownTitle: 'Rincian per Kategori',
   noDataInRange: 'Tidak ada data pada rentang ini.',
@@ -1401,6 +1404,7 @@ const _en = AppStringsData(
   filterCategoryAll: 'All Categories',
   searchTransactionHint: 'Search transaction name...',
   clearCategoryFilter: 'Clear category selection',
+  clearDateFilter: 'Clear date filter',
   statBalanceNet: 'Net Balance',
   categoryBreakdownTitle: 'Breakdown by Category',
   noDataInRange: 'No data in this range.',

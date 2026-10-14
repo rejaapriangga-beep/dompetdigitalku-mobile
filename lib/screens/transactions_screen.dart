@@ -41,13 +41,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   bool _loading = true;
   String? _error;
 
-  // Filter sederhana: jenis transaksi (semua/masuk/keluar), kategori, dan
-  // pencarian nama — tidak pakai rentang tanggal seperti di halaman
-  // Laporan, supaya tampilannya tetap ringkas di sini.
+  // Filter: jenis transaksi (semua/masuk/keluar), kategori, pencarian nama,
+  // dan rentang tanggal (opsional — null berarti tidak dibatasi di sisi itu).
   String _typeFilter = 'all';
   String? _categoryFilter;
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
+  DateTime? _dateFrom;
+  DateTime? _dateTo;
 
   List<Category> get _categoriesForFilter => _typeFilter == 'all'
       ? _categories
@@ -74,8 +75,33 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         !t.name.toLowerCase().contains(_searchQuery.toLowerCase())) {
       return false;
     }
+    final d = DateUtils.dateOnly(t.date);
+    if (_dateFrom != null && d.isBefore(_dateFrom!)) return false;
+    if (_dateTo != null && d.isAfter(_dateTo!)) return false;
     return true;
   }).toList();
+
+  Future<void> _pickDateFrom() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _dateFrom ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked == null) return;
+    setState(() => _dateFrom = DateUtils.dateOnly(picked));
+  }
+
+  Future<void> _pickDateTo() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _dateTo ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked == null) return;
+    setState(() => _dateTo = DateUtils.dateOnly(picked));
+  }
 
   @override
   void initState() {
@@ -400,6 +426,63 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: _pickDateFrom,
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              isDense: true,
+                              labelText: S.t.fromLabel,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 10,
+                              ),
+                            ),
+                            child: Text(
+                              _dateFrom == null
+                                  ? '—'
+                                  : DateFormat('d/M/yyyy').format(_dateFrom!),
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: InkWell(
+                          onTap: _pickDateTo,
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              isDense: true,
+                              labelText: S.t.toLabel,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 10,
+                              ),
+                            ),
+                            child: Text(
+                              _dateTo == null
+                                  ? '—'
+                                  : DateFormat('d/M/yyyy').format(_dateTo!),
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (_dateFrom != null || _dateTo != null)
+                        IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          tooltip: S.t.clearDateFilter,
+                          onPressed: () => setState(() {
+                            _dateFrom = null;
+                            _dateTo = null;
+                          }),
+                        ),
+                    ],
+                  ),
                   const SizedBox(height: 10),
                   if (_filteredTransactions.isEmpty)
                     Padding(
@@ -492,9 +575,7 @@ class _MiniStat extends StatelessWidget {
   }
 }
 
-/// Pill filter jenis transaksi (Semua/Masuk/Keluar) — single-select,
-/// sengaja dibuat sesederhana mungkin (tanpa rentang tanggal/kategori
-/// seperti di halaman Laporan).
+/// Pill filter jenis transaksi (Semua/Masuk/Keluar) — single-select.
 class _TypeFilterChip extends StatelessWidget {
   final String label;
   final bool selected;
