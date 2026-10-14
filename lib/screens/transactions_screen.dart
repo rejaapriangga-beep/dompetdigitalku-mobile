@@ -17,8 +17,6 @@ import '../widgets/currency_field.dart';
 import '../widgets/top_menu_bar.dart';
 import 'login_screen.dart';
 import 'accounts_assets_screen.dart';
-import 'budgets_screen.dart';
-import 'reports_screen.dart';
 import 'invoice_view_screen.dart';
 import 'transaction_detail_screen.dart';
 import 'categories_screen.dart';
@@ -263,33 +261,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () => Navigator.of(context)
-                .push(
-                  MaterialPageRoute(
-                    builder: (_) => const AccountsAssetsScreen(),
-                  ),
-                )
-                .then((_) => _load()),
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-            tooltip: S.t.assetsDebtTooltip,
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_horiz),
-            tooltip: S.t.moreMenuTooltip,
-            onSelected: (value) {
-              final Widget screen = value == 'budgets'
-                  ? const BudgetsScreen()
-                  : const ReportsScreen();
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => screen))
-                  .then((_) => _load());
-            },
-            itemBuilder: (ctx) => [
-              PopupMenuItem(value: 'budgets', child: Text(S.t.menuBudget)),
-              PopupMenuItem(value: 'reports', child: Text(S.t.menuReportsFull)),
-            ],
-          ),
-          IconButton(
             onPressed: _logout,
             icon: const Icon(Icons.logout),
             tooltip: S.t.logoutTooltip,
@@ -353,23 +324,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _searchCtrl,
-                    style: const TextStyle(fontSize: 12),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      hintText: S.t.searchTransactionHint,
-                      hintStyle: const TextStyle(fontSize: 12),
-                      prefixIcon: const Icon(Icons.search, size: 20),
-                      suffixIcon: _searchCtrl.text.isEmpty
-                          ? null
-                          : IconButton(
-                              icon: const Icon(Icons.clear, size: 18),
-                              onPressed: () => _searchCtrl.clear(),
-                            ),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -487,6 +441,23 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           }),
                         ),
                     ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _searchCtrl,
+                    style: const TextStyle(fontSize: 12),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: S.t.searchTransactionHint,
+                      hintStyle: const TextStyle(fontSize: 12),
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      suffixIcon: _searchCtrl.text.isEmpty
+                          ? null
+                          : IconButton(
+                              icon: const Icon(Icons.clear, size: 18),
+                              onPressed: () => _searchCtrl.clear(),
+                            ),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   if (_filteredTransactions.isEmpty)
