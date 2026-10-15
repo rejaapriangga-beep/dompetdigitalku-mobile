@@ -7,6 +7,7 @@ import '../l10n/app_strings.dart';
 import '../models/models.dart';
 import '../theme.dart';
 import '../widgets/currency_field.dart';
+import '../widgets/rename_dialog.dart';
 import '../widgets/stat_card.dart';
 import 'transactions_screen.dart' show rp;
 
@@ -60,6 +61,17 @@ class _DebtsScreenState extends State<DebtsScreen> {
   void _snack(String msg) {
     if (mounted)
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Future<void> _rename(Debt d) async {
+    final name = await showRenameDialog(context, currentName: d.name);
+    if (name == null) return;
+    try {
+      await DataApi.renameDebt(d.id, name);
+      _load();
+    } catch (_) {
+      _snack(S.t.renameFailed);
+    }
   }
 
   Future<void> _delete(Debt d) async {
@@ -204,6 +216,10 @@ class _DebtsScreenState extends State<DebtsScreen> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
+                                RenameIconButton(
+                                  onPressed: () => _rename(d),
+                                ),
+                                const SizedBox(width: 12),
                                 IconButton(
                                   icon: Icon(
                                     Icons.delete_outline,

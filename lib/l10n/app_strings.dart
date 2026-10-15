@@ -165,6 +165,8 @@ class AppStringsData {
     required this.noExpenseCategoryYet,
     required this.noIncomeCategoryYet,
     required this.editButton,
+    required this.renameTitle,
+    required this.renameFailed,
     // --- Laporan (reports_screen.dart) ---
     required this.tabFinancialReport,
     required this.tabFinancialHealth,
@@ -502,6 +504,8 @@ class AppStringsData {
   final String noExpenseCategoryYet;
   final String noIncomeCategoryYet;
   final String editButton;
+  final String renameTitle;
+  final String renameFailed;
   // --- Laporan (reports_screen.dart) ---
   final String tabFinancialReport;
   final String tabFinancialHealth;
@@ -958,7 +962,7 @@ const _id = AppStringsData(
   addCategoryFailed: 'Gagal menambah kategori (mungkin nama sudah dipakai).',
   updateCategoryFailed: 'Gagal mengubah kategori (mungkin nama sudah dipakai).',
   deleteCategoryInUse:
-      'Kategori masih dipakai oleh transaksi atau anggaran, tidak bisa dihapus.',
+      'Kategori masih dipakai oleh transaksi, tidak bisa dihapus.',
   expenseCategoryDescription:
       'Kategori pengeluaran dipakai untuk memilih kategori transaksi '
       'pengeluaran, dan menjadi daftar kategori Anggaran Bulanan.',
@@ -969,6 +973,8 @@ const _id = AppStringsData(
   noExpenseCategoryYet: 'Belum ada kategori pengeluaran.',
   noIncomeCategoryYet: 'Belum ada kategori pemasukan.',
   editButton: 'Ubah',
+  renameTitle: 'Ubah nama',
+  renameFailed: 'Gagal mengubah nama.',
   tabFinancialReport: 'Laporan Keuangan',
   tabFinancialHealth: 'Kesehatan Keuangan',
   fromLabel: 'Dari',
@@ -1384,7 +1390,7 @@ const _en = AppStringsData(
   updateCategoryFailed:
       'Failed to update category (name may already be in use).',
   deleteCategoryInUse:
-      'Category is still used by a transaction or budget, cannot be deleted.',
+      'Category is still used by a transaction, cannot be deleted.',
   expenseCategoryDescription:
       'Expense categories are used to pick a category for expense '
       'transactions, and become the category list for the Monthly Budget.',
@@ -1395,6 +1401,8 @@ const _en = AppStringsData(
   noExpenseCategoryYet: 'No expense category yet.',
   noIncomeCategoryYet: 'No income category yet.',
   editButton: 'Edit',
+  renameTitle: 'Rename',
+  renameFailed: 'Failed to rename.',
   tabFinancialReport: 'Financial Report',
   tabFinancialHealth: 'Financial Health',
   fromLabel: 'From',
