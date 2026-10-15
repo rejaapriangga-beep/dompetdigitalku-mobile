@@ -93,7 +93,7 @@ class TopMenuBar extends StatelessWidget {
       // IntrinsicHeight + stretch: semua kartu setinggi kartu tertinggi
       // (label "Aset, Investasi & Utang" 2 baris), jadi ukurannya seragam.
       child: IntrinsicHeight(
-          child: Row(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: items.map((item) {
             final active = item.dest == current;
