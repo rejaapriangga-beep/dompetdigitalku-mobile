@@ -8,6 +8,7 @@ import '../l10n/app_strings.dart';
 import '../models/models.dart';
 import '../theme.dart';
 import '../widgets/currency_field.dart';
+import '../widgets/rename_dialog.dart';
 import '../widgets/stat_card.dart';
 import '../widgets/top_menu_bar.dart';
 import 'transactions_screen.dart' show rp;
@@ -140,6 +141,20 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
   void _snack(String msg) {
     if (mounted)
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Future<void> _rename(
+    String currentName,
+    Future<void> Function(String name) save,
+  ) async {
+    final name = await showRenameDialog(context, currentName: currentName);
+    if (name == null) return;
+    try {
+      await save(name);
+      _load();
+    } catch (_) {
+      _snack(S.t.renameFailed);
+    }
   }
 
   void _openAddAccount() {
@@ -293,6 +308,10 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
                     color: a.balance < 0 ? AppColors.coral : AppColors.ink,
                   ),
                 ),
+                onEdit: () => _rename(
+                  a.name,
+                  (n) => DataApi.renameAccount(a.id, n),
+                ),
                 onDelete: () => _deleteAccount(a),
               ),
             ),
@@ -351,6 +370,13 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
                             ],
                           ),
                         ),
+                        RenameIconButton(
+                          onPressed: () => _rename(
+                            a.name,
+                            (n) => DataApi.renameAsset(a.id, n),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
                         IconButton(
                           icon: Icon(
                             Icons.delete_outline,
@@ -462,6 +488,13 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
                             ],
                           ),
                         ),
+                        RenameIconButton(
+                          onPressed: () => _rename(
+                            inv.name,
+                            (n) => DataApi.renameInvestment(inv.id, n),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
                         IconButton(
                           icon: Icon(
                             Icons.delete_outline,
@@ -550,6 +583,10 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
                     fontSize: 12,
                   ),
                 ),
+                onEdit: () => _rename(
+                  d.name,
+                  (n) => DataApi.renameDebt(d.id, n),
+                ),
               ),
             ),
         ],
@@ -620,11 +657,13 @@ class _RowCard extends StatelessWidget {
   final String badge;
   final String title;
   final Widget trailing;
+  final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   const _RowCard({
     required this.badge,
     required this.title,
     required this.trailing,
+    this.onEdit,
     this.onDelete,
   });
 
@@ -650,7 +689,12 @@ class _RowCard extends StatelessWidget {
             ),
           ),
           trailing,
-          if (onDelete != null)
+          if (onEdit != null) ...[
+            const SizedBox(width: 12),
+            RenameIconButton(onPressed: onEdit!),
+          ],
+          if (onDelete != null) ...[
+            const SizedBox(width: 12),
             IconButton(
               icon: Icon(
                 Icons.delete_outline,
@@ -661,6 +705,7 @@ class _RowCard extends StatelessWidget {
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
             ),
+          ],
         ],
       ),
     );

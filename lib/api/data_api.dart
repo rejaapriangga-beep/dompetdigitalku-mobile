@@ -50,6 +50,10 @@ class DataApi {
     );
   }
 
+  static Future<void> renameDebt(String id, String name) async {
+    await ApiClient.instance.dio.patch('/debts/$id', data: {'name': name});
+  }
+
   static Future<void> deleteDebt(String id) async {
     await ApiClient.instance.dio.delete('/debts/$id');
   }
@@ -77,6 +81,10 @@ class DataApi {
     );
   }
 
+  static Future<void> renameAsset(String id, String name) async {
+    await ApiClient.instance.dio.patch('/assets/$id', data: {'name': name});
+  }
+
   static Future<void> deleteAsset(String id) async {
     await ApiClient.instance.dio.delete('/assets/$id');
   }
@@ -89,6 +97,10 @@ class DataApi {
       '/accounts',
       data: {'name': name, 'type': type},
     );
+  }
+
+  static Future<void> renameAccount(String id, String name) async {
+    await ApiClient.instance.dio.patch('/accounts/$id', data: {'name': name});
   }
 
   static Future<void> deleteAccount(String id) async {
@@ -175,6 +187,13 @@ class DataApi {
     await ApiClient.instance.dio.patch(
       '/investments/$id',
       data: {'currentAmount': currentAmount},
+    );
+  }
+
+  static Future<void> renameInvestment(String id, String name) async {
+    await ApiClient.instance.dio.patch(
+      '/investments/$id',
+      data: {'name': name},
     );
   }
 
