@@ -90,49 +90,55 @@ class TopMenuBar extends StatelessWidget {
         border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      child: Row(
-        children: items.map((item) {
-          final active = item.dest == current;
-          return Expanded(
-            child: Tooltip(
-              message: item.label,
-              child: InkWell(
-                onTap: item.onTap,
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: item.color.withValues(alpha: active ? 0.26 : 0.14),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(item.icon, size: 22, color: item.color),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.label,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w600,
-                          color: item.color,
-                          height: 1.15,
+      // IntrinsicHeight + stretch: semua kartu setinggi kartu tertinggi
+      // (label "Aset, Investasi & Utang" 2 baris), jadi ukurannya seragam.
+      child: IntrinsicHeight(
+          child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: items.map((item) {
+            final active = item.dest == current;
+            return Expanded(
+              child: Tooltip(
+                message: item.label,
+                child: InkWell(
+                  onTap: item.onTap,
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: item.color.withValues(alpha: active ? 0.26 : 0.14),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(item.icon, size: 22, color: item.color),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.label,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                            color: item.color,
+                            height: 1.15,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

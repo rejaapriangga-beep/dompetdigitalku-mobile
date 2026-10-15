@@ -575,8 +575,12 @@ class _AccountsAssetsScreenState extends State<AccountsAssetsScreen> {
               (d) => _RowCard(
                 badge: d.type,
                 title: d.name,
-                trailing: Text(
+                // Nominal utang + cicilan terlalu panjang untuk ditaruh
+                // sebaris dengan nama (layar sempit → overflow), jadi
+                // ditampilkan di baris kedua di bawah nama.
+                subtitle: Text(
                   '${rp(d.remainingAmount)} · ${rp(d.monthlyInstallment)}${S.t.perMonthSuffix}',
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: AppColors.coral,
@@ -656,13 +660,15 @@ class _Badge extends StatelessWidget {
 class _RowCard extends StatelessWidget {
   final String badge;
   final String title;
-  final Widget trailing;
+  final Widget? trailing;
+  final Widget? subtitle;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   const _RowCard({
     required this.badge,
     required this.title,
-    required this.trailing,
+    this.trailing,
+    this.subtitle,
     this.onEdit,
     this.onDelete,
   });
@@ -682,13 +688,26 @@ class _RowCard extends StatelessWidget {
           _Badge(badge),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              title,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 2),
+                  subtitle!,
+                ],
+              ],
             ),
           ),
-          trailing,
+          if (trailing != null) trailing!,
           if (onEdit != null) ...[
             const SizedBox(width: 12),
             RenameIconButton(onPressed: onEdit!),
