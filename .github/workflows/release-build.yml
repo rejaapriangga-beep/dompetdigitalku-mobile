@@ -86,7 +86,7 @@ jobs:
           name: dompetdigitalku-release-aab
           path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 14
 
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1
