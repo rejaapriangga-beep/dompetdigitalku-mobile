@@ -6,12 +6,12 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'ads/ad_ids.dart';
 import 'ads/ads_gate.dart';
-import 'api/auth_api.dart';
 import 'biometric/biometric_prefs.dart';
+import 'data/server_migration.dart';
 import 'locale_controller.dart';
 import 'route_observer.dart';
 import 'screens/biometric_lock_screen.dart';
-import 'screens/login_screen.dart';
+import 'screens/migration_screen.dart';
 import 'screens/home_screen.dart';
 import 'theme.dart';
 
@@ -118,16 +118,17 @@ class _AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<_AuthGate> {
-  // (sudah login?, kunci sidik jari aktif?) — dicek bareng sekali di awal
-  // supaya kalau kunci sidik jari aktif, BiometricLockScreen yang tampil
-  // duluan, bukan Beranda langsung.
+  // (ada data lama di server yang belum dipindah?, kunci sidik jari aktif?)
+  // — dicek bareng sekali di awal. Tidak ada lagi layar login: data
+  // tersimpan di HP, jadi aplikasi langsung terbuka. Pengguna lama yang
+  // masih punya sesi login diarahkan dulu ke layar pindahan data.
   late Future<(bool, bool)> _stateFuture;
 
   @override
   void initState() {
     super.initState();
     _stateFuture = Future.wait([
-      AuthApi.isLoggedIn(),
+      ServerMigration.isPending(),
       BiometricPrefs.isEnabled(),
     ]).then((r) => (r[0], r[1]));
   }
@@ -142,8 +143,9 @@ class _AuthGateState extends State<_AuthGate> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        final (loggedIn, biometricLockOn) = snapshot.data ?? (false, false);
-        if (!loggedIn) return const LoginScreen();
+        final (migrationPending, biometricLockOn) =
+            snapshot.data ?? (false, false);
+        if (migrationPending) return const MigrationScreen();
         return biometricLockOn
             ? const BiometricLockScreen()
             : const HomeScreen();

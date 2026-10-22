@@ -119,6 +119,12 @@ class LocalInvoiceStore {
     }
   }
 
+  /// Hapus semua foto invoice lokal (fitur "Hapus Semua Data").
+  static Future<void> deleteAll() async {
+    final dir = await _dir();
+    if (await dir.exists()) await dir.delete(recursive: true);
+  }
+
   /// Cek beberapa id transaksi sekaligus, kembalikan set id yang punya foto lokal.
   static Future<Set<String>> getLocalInvoiceIds(
     List<String> transactionIds,
