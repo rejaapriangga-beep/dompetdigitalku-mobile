@@ -7,7 +7,15 @@
     <application
         android:label="dompetdigitalku"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
+        <!-- Android Auto Backup dimatikan: data keuangan hanya boleh keluar
+             dari HP lewat jalur yang dipilih pengguna sendiri (file backup
+             terenkripsi / sinkron Google Drive terenkripsi). Selain itu,
+             memulihkan penyimpanan aman (flutter_secure_storage) tanpa kunci
+             Keystore-nya di HP baru bikin foto invoice tidak bisa dibuka. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -12,6 +12,7 @@ import 'data/server_migration.dart';
 import 'locale_controller.dart';
 import 'route_observer.dart';
 import 'screens/biometric_lock_screen.dart';
+import 'screens/consent_screen.dart';
 import 'screens/migration_screen.dart';
 import 'sync/drive_sync.dart';
 import 'screens/home_screen.dart';
@@ -128,21 +129,26 @@ class _AuthGateState extends State<_AuthGate> {
   // (ada data lama di server yang belum dipindah?, kunci sidik jari aktif?)
   // — dicek bareng sekali di awal. Tidak ada lagi layar login: data
   // tersimpan di HP, jadi aplikasi langsung terbuka. Pengguna lama yang
-  // masih punya sesi login diarahkan dulu ke layar pindahan data.
-  late Future<(bool, bool)> _stateFuture;
+  // masih punya sesi login diarahkan dulu ke layar pindahan data. Sebelum
+  // semuanya, pengguna harus menyetujui Kebijakan Privasi & Syarat
+  // Ketentuan sekali (ConsentScreen).
+  late Future<(bool, bool, bool)> _stateFuture;
 
   @override
   void initState() {
     super.initState();
-    _stateFuture = Future.wait([
-      ServerMigration.isPending(),
-      BiometricPrefs.isEnabled(),
-    ]).then((r) => (r[0], r[1]));
+    _stateFuture = _check();
   }
+
+  Future<(bool, bool, bool)> _check() => Future.wait([
+    ConsentScreen.isAccepted(),
+    ServerMigration.isPending(),
+    BiometricPrefs.isEnabled(),
+  ]).then((r) => (r[0], r[1], r[2]));
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<(bool, bool)>(
+    return FutureBuilder<(bool, bool, bool)>(
       future: _stateFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
@@ -150,8 +156,13 @@ class _AuthGateState extends State<_AuthGate> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        final (migrationPending, biometricLockOn) =
-            snapshot.data ?? (false, false);
+        final (consented, migrationPending, biometricLockOn) =
+            snapshot.data ?? (false, false, false);
+        if (!consented) {
+          return ConsentScreen(
+            onAccepted: () => setState(() => _stateFuture = _check()),
+          );
+        }
         if (migrationPending) return const MigrationScreen();
         return biometricLockOn
             ? const BiometricLockScreen()

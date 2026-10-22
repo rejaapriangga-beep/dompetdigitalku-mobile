@@ -417,6 +417,15 @@ class AppStringsData {
     required this.backupReminderBody,
     required this.backupReminderAction,
     required this.backupReminderLater,
+    required this.consentTitle,
+    required this.consentPointLocal,
+    required this.consentPointSync,
+    required this.consentPointBackup,
+    required this.consentPointAds,
+    required this.consentAgreePrefix,
+    required this.consentAgreeMiddle,
+    required this.consentAgreeSuffix,
+    required this.consentAcceptButton,
   });
 
   final String appName;
@@ -809,6 +818,15 @@ class AppStringsData {
   final String backupReminderBody;
   final String backupReminderAction;
   final String backupReminderLater;
+  final String consentTitle;
+  final String consentPointLocal;
+  final String consentPointSync;
+  final String consentPointBackup;
+  final String consentPointAds;
+  final String consentAgreePrefix;
+  final String consentAgreeMiddle;
+  final String consentAgreeSuffix;
+  final String consentAcceptButton;
 }
 
 String typeConfirmWordToConfirm(String word) =>
@@ -1414,6 +1432,15 @@ const _id = AppStringsData(
   backupReminderBody: 'Data hanya tersimpan di HP ini. Buat backup atau aktifkan sinkron Google Drive supaya tidak hilang kalau HP rusak atau hilang.',
   backupReminderAction: 'Backup sekarang',
   backupReminderLater: 'Nanti',
+  consentTitle: 'Selamat datang di DompetDigitalKu',
+  consentPointLocal: 'Data keuangan Anda disimpan di HP ini, tidak di server kami. Tidak perlu membuat akun.',
+  consentPointSync: 'Sinkron ke HP lain bersifat opsional, lewat Google Drive milik Anda sendiri dan terenkripsi dengan sandi Anda.',
+  consentPointBackup: 'Anda bertanggung jawab membuat backup. Data yang tidak di-backup atau disinkron bisa hilang kalau aplikasi dihapus atau HP rusak/hilang.',
+  consentPointAds: 'Aplikasi gratis ini menampilkan iklan non-personalisasi dari Google AdMob.',
+  consentAgreePrefix: 'Saya telah membaca dan menyetujui ',
+  consentAgreeMiddle: ' dan ',
+  consentAgreeSuffix: '.',
+  consentAcceptButton: 'Setuju & Mulai',
 );
 
 const _en = AppStringsData(
@@ -1904,6 +1931,15 @@ const _en = AppStringsData(
   backupReminderBody: 'Your data is only stored on this phone. Make a backup or turn on Google Drive sync so it isn\'t lost if the phone breaks or goes missing.',
   backupReminderAction: 'Back up now',
   backupReminderLater: 'Later',
+  consentTitle: 'Welcome to DompetDigitalKu',
+  consentPointLocal: 'Your financial data is stored on this phone, not on our server. No account needed.',
+  consentPointSync: 'Syncing to other phones is optional, through your own Google Drive, encrypted with your password.',
+  consentPointBackup: 'You are responsible for making backups. Data that isn\'t backed up or synced can be lost if the app is removed or the phone breaks or goes missing.',
+  consentPointAds: 'This free app shows non-personalized ads from Google AdMob.',
+  consentAgreePrefix: 'I have read and agree to the ',
+  consentAgreeMiddle: ' and ',
+  consentAgreeSuffix: '.',
+  consentAcceptButton: 'Agree & Start',
 );
 
 String migrationDoneBody(int transactions, int invoices) =>
