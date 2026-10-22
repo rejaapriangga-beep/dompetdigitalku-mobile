@@ -75,6 +75,9 @@ dependencies:
   # Kunci aplikasi pakai sidik jari/Face ID (opsional, diaktifkan lewat
   # toggle di halaman Bantuan) — lihat lib/biometric/.
   local_auth: ^2.3.0
+  sqflite: ^2.4.5
+  path: ^1.9.1
+  uuid: ^4.6.0
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +91,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   # Generator ikon aplikasi Android dari satu gambar sumber.
   flutter_launcher_icons: ^0.14.3
+  sqflite_common_ffi: ^2.4.4
 
 flutter_launcher_icons:
   android: true
