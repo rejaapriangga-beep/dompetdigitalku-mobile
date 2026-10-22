@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import '../ads/bottom_banner_ad.dart';
 import '../api/data_api.dart';
+import '../backup/backup_reminder.dart';
 import '../l10n/app_strings.dart';
 import '../locale_controller.dart';
 import '../models/models.dart';
@@ -38,6 +39,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   Map<String, double> _budgets = {};
   bool _loading = true;
   String? _error;
+  // null = tidak perlu pengingat; false = belum pernah backup; true = sudah
+  // lama tidak backup.
+  bool? _backupReminderStale;
 
   @override
   void initState() {
@@ -95,8 +99,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
         DataApi.getCategories(),
         DataApi.getBudgets(),
       ]);
+      final transactions = results[0] as List<Transaction>;
+      bool? reminder;
+      if (await BackupReminder.shouldShow(transactions.length)) {
+        reminder = await BackupReminder.lastBackupAt() != null;
+      }
+      if (!mounted) return;
       setState(() {
-        _transactions = results[0] as List<Transaction>;
+        _backupReminderStale = reminder;
+        _transactions = transactions;
         _accounts = results[1] as List<Account>;
         _investments = results[2] as List<Investment>;
         _assets = results[3] as List<Asset>;
@@ -262,6 +273,20 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                         style: TextStyle(color: AppColors.coral),
                       ),
                     ),
+
+                  if (_backupReminderStale != null) ...[
+                    _BackupReminderCard(
+                      stale: _backupReminderStale!,
+                      onBackup: () => _openMenu(const BackupScreen()),
+                      onLater: () async {
+                        await BackupReminder.snooze();
+                        if (mounted) {
+                          setState(() => _backupReminderStale = null);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 14),
+                  ],
 
                   // --- Anggaran Bulan Ini ---
                   _BudgetHomeSummary(
@@ -687,6 +712,81 @@ class _BudgetHomeSummary extends StatelessWidget {
               Icon(Icons.chevron_right, size: 18, color: AppColors.inkSoft),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Pengingat backup di Beranda (lihat backup/backup_reminder.dart).
+class _BackupReminderCard extends StatelessWidget {
+  final bool stale;
+  final VoidCallback onBackup;
+  final VoidCallback onLater;
+  const _BackupReminderCard({
+    required this.stale,
+    required this.onBackup,
+    required this.onLater,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 10, 8, 4),
+      decoration: BoxDecoration(
+        color: AppColors.gold.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.gold.withValues(alpha: 0.45)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.backup_outlined, size: 18, color: AppColors.gold),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      stale
+                          ? S.t.backupReminderTitleStale
+                          : S.t.backupReminderTitleNever,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      S.t.backupReminderBody,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.4,
+                        color: AppColors.inkSoft,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: onLater,
+                child: Text(S.t.backupReminderLater),
+              ),
+              TextButton(
+                onPressed: onBackup,
+                child: Text(S.t.backupReminderAction),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

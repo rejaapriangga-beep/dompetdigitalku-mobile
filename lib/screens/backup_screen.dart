@@ -11,6 +11,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../ads/bottom_banner_ad.dart';
+import '../backup/auto_backup.dart';
 import '../backup/backup_crypto.dart';
 import '../backup/backup_service.dart';
 import '../data/server_migration.dart';
@@ -167,6 +168,68 @@ class _BackupScreenState extends State<BackupScreen> {
     }
   }
 
+  Future<void> _restoreAuto() async {
+    final entries = await AutoBackup.list();
+    if (!mounted) return;
+    if (entries.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(S.t.autoBackupEmpty)));
+      return;
+    }
+    final fmt = DateFormat(
+      'EEEE, d MMMM yyyy, HH:mm',
+      LocaleController.instance.dateLocale,
+    );
+    final picked = await showDialog<AutoBackupEntry>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(S.t.autoBackupPickTitle),
+        children: [
+          for (final e in entries)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, e),
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(fmt.format(e.date)),
+                subtitle: Text(autoBackupEntryLabel(e.transactionCount)),
+              ),
+            ),
+        ],
+      ),
+    );
+    if (picked == null || !mounted) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(S.t.confirmRestoreTitle),
+        content: Text(autoBackupConfirmBody(fmt.format(picked.date))),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(S.t.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              S.t.restoreButton,
+              style: TextStyle(color: AppColors.coral),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    _setBusy(S.t.restoringData);
+    try {
+      await AutoBackup.restore(picked);
+      DriveSync.scheduleSync();
+      _done(S.t.autoBackupRestored);
+    } catch (_) {
+      _fail(S.t.autoBackupRestoreFailed);
+    }
+  }
+
   Future<void> _importFromServer() async {
     final ok = await showDialog<bool>(
       context: context,
@@ -315,6 +378,25 @@ class _BackupScreenState extends State<BackupScreen> {
               title: S.t.chooseBackupFileTitle,
               subtitle: S.t.chooseBackupFileSubtitle,
               onTap: _restoreLocal,
+            ),
+
+            const SizedBox(height: 22),
+            Text(
+              S.t.autoBackupTitle,
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              S.t.autoBackupDescription,
+              style: TextStyle(fontSize: 12, color: AppColors.inkSoft),
+            ),
+            const SizedBox(height: 10),
+            _ActionTile(
+              icon: Icons.history,
+              color: AppColors.primary,
+              title: S.t.autoBackupRestoreTitle,
+              subtitle: S.t.autoBackupRestoreSubtitle,
+              onTap: _restoreAuto,
             ),
 
             const SizedBox(height: 22),

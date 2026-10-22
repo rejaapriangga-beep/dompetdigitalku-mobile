@@ -6,6 +6,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'ads/ad_ids.dart';
 import 'ads/ads_gate.dart';
+import 'backup/auto_backup.dart';
 import 'biometric/biometric_prefs.dart';
 import 'data/server_migration.dart';
 import 'locale_controller.dart';
@@ -65,6 +66,8 @@ Future<void> main() async {
   // Sinkron Google Drive (kalau diaktifkan) — tidak ditunggu, berjalan di
   // belakang setelah UI tampil.
   DriveSync.init();
+  // Salinan otomatis harian di HP (lihat backup/auto_backup.dart).
+  AutoBackup.runIfDue();
 }
 
 class DompetDigitalKuApp extends StatelessWidget {
