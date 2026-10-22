@@ -4,6 +4,7 @@
 // hapus data UU PDP Pasal 26). Butuh ketik "HAPUS" untuk konfirmasi.
 import 'package:flutter/material.dart';
 import '../api/auth_api.dart' show ApiException;
+import '../backup/auto_backup.dart';
 import '../data/local_store.dart';
 import '../data/server_migration.dart';
 import '../sync/drive_sync.dart';
@@ -68,6 +69,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         await DriveSync.disable(deleteRemote: true);
       }
       await LocalStore.wipeAll();
+      await AutoBackup.deleteAll();
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const HomeScreen()),

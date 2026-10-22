@@ -14,6 +14,7 @@ import 'package:share_plus/share_plus.dart';
 import '../api/data_api.dart';
 import '../storage/local_invoice_store.dart';
 import 'backup_crypto.dart';
+import 'backup_reminder.dart';
 
 class BackupPreview {
   final Map<String, dynamic> data;
@@ -69,6 +70,7 @@ class BackupService {
     await Share.shareXFiles([
       XFile(file.path, name: fileName),
     ], text: 'Backup DuitKita');
+    await BackupReminder.markBackedUp();
     return attachmentCount;
   }
 

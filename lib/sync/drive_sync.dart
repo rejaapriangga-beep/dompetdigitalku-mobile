@@ -92,6 +92,10 @@ class DriveSync with WidgetsBindingObserver {
   static String? _cachedSalt;
   static SecretKey? _cachedKey;
 
+  /// Sinkron aktif di HP ini (dibaca langsung dari penyimpanan, tidak
+  /// menunggu [init] selesai).
+  static Future<bool> isEnabled() async => await _read(_passKey) != null;
+
   /// Dipanggil sekali dari main(): muat status & sinkron saat app dibuka.
   static Future<void> init() async {
     WidgetsBinding.instance.addObserver(_instance);

@@ -404,6 +404,19 @@ class AppStringsData {
     required this.syncNever,
     required this.syncOff,
     required this.syncConnectFailed,
+    required this.autoBackupTitle,
+    required this.autoBackupDescription,
+    required this.autoBackupRestoreTitle,
+    required this.autoBackupRestoreSubtitle,
+    required this.autoBackupEmpty,
+    required this.autoBackupPickTitle,
+    required this.autoBackupRestored,
+    required this.autoBackupRestoreFailed,
+    required this.backupReminderTitleNever,
+    required this.backupReminderTitleStale,
+    required this.backupReminderBody,
+    required this.backupReminderAction,
+    required this.backupReminderLater,
   });
 
   final String appName;
@@ -783,6 +796,19 @@ class AppStringsData {
   final String syncNever;
   final String syncOff;
   final String syncConnectFailed;
+  final String autoBackupTitle;
+  final String autoBackupDescription;
+  final String autoBackupRestoreTitle;
+  final String autoBackupRestoreSubtitle;
+  final String autoBackupEmpty;
+  final String autoBackupPickTitle;
+  final String autoBackupRestored;
+  final String autoBackupRestoreFailed;
+  final String backupReminderTitleNever;
+  final String backupReminderTitleStale;
+  final String backupReminderBody;
+  final String backupReminderAction;
+  final String backupReminderLater;
 }
 
 String typeConfirmWordToConfirm(String word) =>
@@ -1375,6 +1401,19 @@ const _id = AppStringsData(
   syncNever: 'Belum pernah sinkron',
   syncOff: 'Belum aktif',
   syncConnectFailed: 'Gagal tersambung ke Google Drive. Periksa koneksi internet Anda.',
+  autoBackupTitle: 'Salinan Otomatis',
+  autoBackupDescription: 'Aplikasi otomatis menyimpan salinan data di HP ini sekali sehari (7 hari terakhir). Pakai ini kalau data rusak atau terhapus tidak sengaja. Salinan ini ikut hilang kalau aplikasi dihapus.',
+  autoBackupRestoreTitle: 'Pulihkan dari Salinan Otomatis',
+  autoBackupRestoreSubtitle: 'Pilih salah satu dari 7 hari terakhir',
+  autoBackupEmpty: 'Belum ada salinan otomatis. Salinan dibuat sekali sehari saat aplikasi dibuka.',
+  autoBackupPickTitle: 'Pilih Salinan',
+  autoBackupRestored: 'Data berhasil dipulihkan dari salinan otomatis.',
+  autoBackupRestoreFailed: 'Gagal memulihkan salinan otomatis.',
+  backupReminderTitleNever: 'Data Anda belum pernah di-backup',
+  backupReminderTitleStale: 'Backup terakhir lebih dari 30 hari lalu',
+  backupReminderBody: 'Data hanya tersimpan di HP ini. Buat backup atau aktifkan sinkron Google Drive supaya tidak hilang kalau HP rusak atau hilang.',
+  backupReminderAction: 'Backup sekarang',
+  backupReminderLater: 'Nanti',
 );
 
 const _en = AppStringsData(
@@ -1852,6 +1891,19 @@ const _en = AppStringsData(
   syncNever: 'Not synced yet',
   syncOff: 'Off',
   syncConnectFailed: 'Couldn\'t connect to Google Drive. Check your internet connection.',
+  autoBackupTitle: 'Automatic Copies',
+  autoBackupDescription: 'The app automatically keeps a copy of your data on this phone once a day (last 7 days). Use it if your data gets corrupted or deleted by accident. These copies are lost if the app is uninstalled.',
+  autoBackupRestoreTitle: 'Restore from Automatic Copy',
+  autoBackupRestoreSubtitle: 'Pick one from the last 7 days',
+  autoBackupEmpty: 'No automatic copies yet. A copy is made once a day when the app is opened.',
+  autoBackupPickTitle: 'Choose a Copy',
+  autoBackupRestored: 'Data restored from the automatic copy.',
+  autoBackupRestoreFailed: 'Failed to restore the automatic copy.',
+  backupReminderTitleNever: 'Your data has never been backed up',
+  backupReminderTitleStale: 'Your last backup is over 30 days old',
+  backupReminderBody: 'Your data is only stored on this phone. Make a backup or turn on Google Drive sync so it isn\'t lost if the phone breaks or goes missing.',
+  backupReminderAction: 'Back up now',
+  backupReminderLater: 'Later',
 );
 
 String migrationDoneBody(int transactions, int invoices) =>
@@ -1871,3 +1923,12 @@ String syncConnectedAs(String email) => LocaleController.instance.isEnglish
 String syncLastAt(String when) => LocaleController.instance.isEnglish
     ? 'Last synced $when'
     : 'Terakhir sinkron $when';
+
+String autoBackupConfirmBody(String date) => LocaleController.instance.isEnglish
+    ? 'The current data will be replaced with the copy from $date. Continue?'
+    : 'Data saat ini akan diganti dengan salinan tanggal $date. Lanjutkan?';
+
+String autoBackupEntryLabel(int transactions) =>
+    LocaleController.instance.isEnglish
+    ? '$transactions transactions'
+    : '$transactions transaksi';
