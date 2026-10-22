@@ -10,6 +10,7 @@ import '../api/api_client.dart';
 import '../api/auth_api.dart';
 import '../api/data_api.dart';
 import '../storage/local_invoice_store.dart';
+import '../sync/drive_sync.dart';
 import 'local_store.dart';
 
 class MigrationResult {
@@ -47,6 +48,7 @@ class ServerMigration {
       );
     }
     await LocalStore.importBackup(data);
+    DriveSync.scheduleSync();
 
     var invoices = 0;
     var failed = 0;

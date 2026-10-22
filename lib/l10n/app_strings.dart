@@ -379,6 +379,31 @@ class AppStringsData {
     required this.importFromServerButton,
     required this.signInOldAccountTitle,
     required this.biometricUseDeviceCredential,
+    required this.syncTitle,
+    required this.syncDescription,
+    required this.syncEnableButton,
+    required this.syncNowButton,
+    required this.syncDisableButton,
+    required this.syncDisableConfirm,
+    required this.syncDeleteRemoteButton,
+    required this.syncDeleteRemoteConfirm,
+    required this.syncCreatePassTitle,
+    required this.syncCreatePassBody,
+    required this.syncEnterPassTitle,
+    required this.syncEnterPassBody,
+    required this.syncPassLabel,
+    required this.syncPassConfirmLabel,
+    required this.syncPassTooShort,
+    required this.syncPassMismatch,
+    required this.syncWrongPass,
+    required this.syncWrongPassStored,
+    required this.syncNeedsSignIn,
+    required this.syncNetworkError,
+    required this.syncUnknownError,
+    required this.syncSyncing,
+    required this.syncNever,
+    required this.syncOff,
+    required this.syncConnectFailed,
   });
 
   final String appName;
@@ -733,6 +758,31 @@ class AppStringsData {
   final String importFromServerButton;
   final String signInOldAccountTitle;
   final String biometricUseDeviceCredential;
+  final String syncTitle;
+  final String syncDescription;
+  final String syncEnableButton;
+  final String syncNowButton;
+  final String syncDisableButton;
+  final String syncDisableConfirm;
+  final String syncDeleteRemoteButton;
+  final String syncDeleteRemoteConfirm;
+  final String syncCreatePassTitle;
+  final String syncCreatePassBody;
+  final String syncEnterPassTitle;
+  final String syncEnterPassBody;
+  final String syncPassLabel;
+  final String syncPassConfirmLabel;
+  final String syncPassTooShort;
+  final String syncPassMismatch;
+  final String syncWrongPass;
+  final String syncWrongPassStored;
+  final String syncNeedsSignIn;
+  final String syncNetworkError;
+  final String syncUnknownError;
+  final String syncSyncing;
+  final String syncNever;
+  final String syncOff;
+  final String syncConnectFailed;
 }
 
 String typeConfirmWordToConfirm(String word) =>
@@ -1300,6 +1350,31 @@ const _id = AppStringsData(
   importFromServerButton: 'Masuk ke Akun Lama',
   signInOldAccountTitle: 'Masuk ke akun lama untuk memindahkan data',
   biometricUseDeviceCredential: 'Pakai PIN/pola layar',
+  syncTitle: 'Sinkron Google Drive',
+  syncDescription: 'Data Anda disimpan terenkripsi di folder tersembunyi milik aplikasi ini di Google Drive Anda sendiri, lalu otomatis diselaraskan ke HP lain yang memakai akun Google yang sama. Kami tidak bisa membaca data ini. Foto invoice tidak ikut disinkron.',
+  syncEnableButton: 'Aktifkan Sinkron',
+  syncNowButton: 'Sinkron Sekarang',
+  syncDisableButton: 'Matikan Sinkron',
+  syncDisableConfirm: 'Matikan sinkron di HP ini? Data di HP ini tetap ada, begitu juga data di Google Drive.',
+  syncDeleteRemoteButton: 'Matikan & hapus data di Drive',
+  syncDeleteRemoteConfirm: 'Data sinkron di Google Drive akan dihapus. Data di HP ini tetap ada. HP lain yang masih tersambung akan mengunggah datanya sendiri lagi saat sinkron berikutnya.',
+  syncCreatePassTitle: 'Buat Sandi Sinkron',
+  syncCreatePassBody: 'Sandi ini mengenkripsi data Anda di Google Drive. Masukkan sandi yang sama saat mengaktifkan sinkron di HP lain. Kalau lupa, data di Drive tidak bisa dibuka.',
+  syncEnterPassTitle: 'Masukkan Sandi Sinkron',
+  syncEnterPassBody: 'Data sinkron dari HP lain ditemukan di Google Drive Anda. Masukkan sandi sinkron yang dibuat di HP tersebut. Data di HP ini akan digabung dengan data itu.',
+  syncPassLabel: 'Sandi sinkron',
+  syncPassConfirmLabel: 'Ulangi sandi sinkron',
+  syncPassTooShort: 'Sandi minimal 8 karakter.',
+  syncPassMismatch: 'Kedua sandi tidak sama.',
+  syncWrongPass: 'Sandi sinkron salah.',
+  syncWrongPassStored: 'Sandi sinkron di HP ini tidak cocok dengan data di Drive (mungkin diganti dari HP lain). Matikan lalu aktifkan lagi sinkron dengan sandi yang benar.',
+  syncNeedsSignIn: 'Perlu masuk lagi ke Google. Ketuk Sinkron Sekarang.',
+  syncNetworkError: 'Sinkron gagal. Periksa koneksi internet Anda.',
+  syncUnknownError: 'Sinkron gagal. Coba lagi nanti.',
+  syncSyncing: 'Menyinkronkan…',
+  syncNever: 'Belum pernah sinkron',
+  syncOff: 'Belum aktif',
+  syncConnectFailed: 'Gagal tersambung ke Google Drive. Periksa koneksi internet Anda.',
 );
 
 const _en = AppStringsData(
@@ -1752,6 +1827,31 @@ const _en = AppStringsData(
   importFromServerButton: 'Sign In to Old Account',
   signInOldAccountTitle: 'Sign in to your old account to move your data',
   biometricUseDeviceCredential: 'Use screen PIN/pattern',
+  syncTitle: 'Google Drive Sync',
+  syncDescription: 'Your data is stored encrypted in this app\'s hidden folder in your own Google Drive, then automatically kept in step on your other phones that use the same Google account. We cannot read this data. Invoice photos are not synced.',
+  syncEnableButton: 'Turn On Sync',
+  syncNowButton: 'Sync Now',
+  syncDisableButton: 'Turn Off Sync',
+  syncDisableConfirm: 'Turn off sync on this phone? Data on this phone stays, and so does the data in Google Drive.',
+  syncDeleteRemoteButton: 'Turn off & delete Drive data',
+  syncDeleteRemoteConfirm: 'The sync data in Google Drive will be deleted. Data on this phone stays. Other phones that are still connected will upload their own data again on their next sync.',
+  syncCreatePassTitle: 'Create Sync Password',
+  syncCreatePassBody: 'This password encrypts your data in Google Drive. Enter the same password when turning on sync on another phone. If you forget it, the Drive data cannot be opened.',
+  syncEnterPassTitle: 'Enter Sync Password',
+  syncEnterPassBody: 'Sync data from another phone was found in your Google Drive. Enter the sync password created on that phone. The data on this phone will be merged with it.',
+  syncPassLabel: 'Sync password',
+  syncPassConfirmLabel: 'Repeat sync password',
+  syncPassTooShort: 'Password must be at least 8 characters.',
+  syncPassMismatch: 'The passwords don\'t match.',
+  syncWrongPass: 'Wrong sync password.',
+  syncWrongPassStored: 'The sync password on this phone doesn\'t match the Drive data (it may have been changed from another phone). Turn sync off and on again with the right password.',
+  syncNeedsSignIn: 'You need to sign in to Google again. Tap Sync Now.',
+  syncNetworkError: 'Sync failed. Check your internet connection.',
+  syncUnknownError: 'Sync failed. Try again later.',
+  syncSyncing: 'Syncing…',
+  syncNever: 'Not synced yet',
+  syncOff: 'Off',
+  syncConnectFailed: 'Couldn\'t connect to Google Drive. Check your internet connection.',
 );
 
 String migrationDoneBody(int transactions, int invoices) =>
@@ -1763,3 +1863,11 @@ String migrationInvoiceFailedNote(int count) =>
     LocaleController.instance.isEnglish
     ? '$count invoice photos could not be downloaded.'
     : '$count foto invoice gagal diunduh.';
+
+String syncConnectedAs(String email) => LocaleController.instance.isEnglish
+    ? 'Connected as $email'
+    : 'Tersambung sebagai $email';
+
+String syncLastAt(String when) => LocaleController.instance.isEnglish
+    ? 'Last synced $when'
+    : 'Terakhir sinkron $when';

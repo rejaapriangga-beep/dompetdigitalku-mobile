@@ -12,6 +12,7 @@ import 'locale_controller.dart';
 import 'route_observer.dart';
 import 'screens/biometric_lock_screen.dart';
 import 'screens/migration_screen.dart';
+import 'sync/drive_sync.dart';
 import 'screens/home_screen.dart';
 import 'theme.dart';
 
@@ -61,6 +62,9 @@ Future<void> main() async {
     );
   }
   runApp(const DompetDigitalKuApp());
+  // Sinkron Google Drive (kalau diaktifkan) — tidak ditunggu, berjalan di
+  // belakang setelah UI tampil.
+  DriveSync.init();
 }
 
 class DompetDigitalKuApp extends StatelessWidget {

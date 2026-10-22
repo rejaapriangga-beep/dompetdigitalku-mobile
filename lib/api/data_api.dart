@@ -7,8 +7,16 @@
 import 'api_client.dart';
 import '../data/local_store.dart';
 import '../models/models.dart';
+import '../sync/drive_sync.dart';
 
 class DataApi {
+  // Setiap perubahan data menjadwalkan sinkron Google Drive (kalau aktif).
+  static Future<T> _changed<T>(Future<T> op) async {
+    final result = await op;
+    DriveSync.scheduleSync();
+    return result;
+  }
+
   static Future<List<Account>> getAccounts() => LocalStore.getAccounts();
 
   static Future<List<Debt>> getDebts({bool activeOnly = false}) =>
@@ -20,21 +28,21 @@ class DataApi {
     required double totalAmount,
     required double monthlyInstallment,
     required DateTime startDate,
-  }) => LocalStore.createDebt(
+  }) => _changed(LocalStore.createDebt(
     name: name,
     type: type,
     totalAmount: totalAmount,
     monthlyInstallment: monthlyInstallment,
     startDate: startDate,
-  );
+  ));
 
   static Future<void> payDebt(String id, double paymentAmount) =>
-      LocalStore.payDebt(id, paymentAmount);
+      _changed(LocalStore.payDebt(id, paymentAmount));
 
   static Future<void> renameDebt(String id, String name) =>
-      LocalStore.renameDebt(id, name);
+      _changed(LocalStore.renameDebt(id, name));
 
-  static Future<void> deleteDebt(String id) => LocalStore.deleteDebt(id);
+  static Future<void> deleteDebt(String id) => _changed(LocalStore.deleteDebt(id));
 
   static Future<List<Asset>> getAssets() => LocalStore.getAssets();
 
@@ -42,46 +50,46 @@ class DataApi {
     required String name,
     required String type,
     required double currentValue,
-  }) => LocalStore.createAsset(
+  }) => _changed(LocalStore.createAsset(
     name: name,
     type: type,
     currentValue: currentValue,
-  );
+  ));
 
   static Future<void> updateAssetValue(String id, double currentValue) =>
-      LocalStore.updateAssetValue(id, currentValue);
+      _changed(LocalStore.updateAssetValue(id, currentValue));
 
   static Future<void> renameAsset(String id, String name) =>
-      LocalStore.renameAsset(id, name);
+      _changed(LocalStore.renameAsset(id, name));
 
-  static Future<void> deleteAsset(String id) => LocalStore.deleteAsset(id);
+  static Future<void> deleteAsset(String id) => _changed(LocalStore.deleteAsset(id));
 
   static Future<void> createAccount({
     required String name,
     required String type,
-  }) => LocalStore.createAccount(name: name, type: type);
+  }) => _changed(LocalStore.createAccount(name: name, type: type));
 
   static Future<void> renameAccount(String id, String name) =>
-      LocalStore.renameAccount(id, name);
+      _changed(LocalStore.renameAccount(id, name));
 
-  static Future<void> deleteAccount(String id) => LocalStore.deleteAccount(id);
+  static Future<void> deleteAccount(String id) => _changed(LocalStore.deleteAccount(id));
 
   static Future<Map<String, double>> getBudgets() => LocalStore.getBudgets();
 
   static Future<void> saveBudget(String categoryId, double monthlyAmount) =>
-      LocalStore.saveBudget(categoryId, monthlyAmount);
+      _changed(LocalStore.saveBudget(categoryId, monthlyAmount));
 
   static Future<List<Category>> getCategories({String? type}) =>
       LocalStore.getCategories(type: type);
 
   static Future<void> createCategory(String name, {String type = 'expense'}) =>
-      LocalStore.createCategory(name, type: type);
+      _changed(LocalStore.createCategory(name, type: type));
 
   static Future<void> updateCategory(String id, String name) =>
-      LocalStore.updateCategory(id, name);
+      _changed(LocalStore.updateCategory(id, name));
 
   static Future<void> deleteCategory(String id) =>
-      LocalStore.deleteCategory(id);
+      _changed(LocalStore.deleteCategory(id));
 
   static Future<List<Investment>> getInvestments() =>
       LocalStore.getInvestments();
@@ -92,22 +100,22 @@ class DataApi {
     required double investedAmount,
     required double currentAmount,
     required DateTime startDate,
-  }) => LocalStore.createInvestment(
+  }) => _changed(LocalStore.createInvestment(
     name: name,
     type: type,
     investedAmount: investedAmount,
     currentAmount: currentAmount,
     startDate: startDate,
-  );
+  ));
 
   static Future<void> updateInvestmentValue(String id, double currentAmount) =>
-      LocalStore.updateInvestmentValue(id, currentAmount);
+      _changed(LocalStore.updateInvestmentValue(id, currentAmount));
 
   static Future<void> renameInvestment(String id, String name) =>
-      LocalStore.renameInvestment(id, name);
+      _changed(LocalStore.renameInvestment(id, name));
 
   static Future<void> deleteInvestment(String id) =>
-      LocalStore.deleteInvestment(id);
+      _changed(LocalStore.deleteInvestment(id));
 
   static Future<List<Transaction>> getTransactions() =>
       LocalStore.getTransactions();
@@ -124,7 +132,7 @@ class DataApi {
     String? note,
     String? debtId,
     String? invoiceUrl,
-  }) => LocalStore.createTransaction(
+  }) => _changed(LocalStore.createTransaction(
     type: type,
     amount: amount,
     name: name,
@@ -134,10 +142,10 @@ class DataApi {
     note: note,
     debtId: debtId,
     invoiceUrl: invoiceUrl,
-  );
+  ));
 
   static Future<void> deleteTransaction(String id) =>
-      LocalStore.deleteTransaction(id);
+      _changed(LocalStore.deleteTransaction(id));
 
   static Future<void> updateTransaction({
     required String id,
@@ -149,7 +157,7 @@ class DataApi {
     required String accountId,
     String? note,
     String? debtId,
-  }) => LocalStore.updateTransaction(
+  }) => _changed(LocalStore.updateTransaction(
     id: id,
     type: type,
     amount: amount,
@@ -159,7 +167,7 @@ class DataApi {
     accountId: accountId,
     note: note,
     debtId: debtId,
-  );
+  ));
 
   /// URL endpoint server lama untuk melihat invoice yang dulu tersimpan di
   /// R2. Saat data dipindah dari server (lib/data/server_migration.dart),
@@ -177,5 +185,5 @@ class DataApi {
   /// data saat ini.
   static Future<Map<String, dynamic>> importBackup(
     Map<String, dynamic> payload,
-  ) => LocalStore.importBackup(payload);
+  ) => _changed(LocalStore.importBackup(payload));
 }
