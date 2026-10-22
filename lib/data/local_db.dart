@@ -167,8 +167,11 @@ class LocalDb {
   // Data bawaan untuk pengguna baru — sama dengan yang dulu dibuat server
   // saat registrasi. Id-nya tetap (bukan UUID acak) supaya dua HP yang sama-
   // sama baru dipasang lalu disinkron tidak menghasilkan "Kas Utama" ganda.
+  // updated_at-nya 0 supaya saat sinkron, perubahan nyata dari HP lain
+  // (mis. "Kas Utama" sudah diganti nama) selalu menang atas data bawaan HP
+  // yang baru dipasang.
   static Future<void> _seedDefaults(DatabaseExecutor db) async {
-    final now = DateTime.now().millisecondsSinceEpoch;
+    const now = 0;
     await db.insert('accounts', {
       'id': 'default-account-kas-utama',
       'name': 'Kas Utama',

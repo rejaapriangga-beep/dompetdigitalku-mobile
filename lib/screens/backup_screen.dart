@@ -14,11 +14,13 @@ import '../ads/bottom_banner_ad.dart';
 import '../backup/backup_crypto.dart';
 import '../backup/backup_service.dart';
 import '../data/server_migration.dart';
+import '../sync/drive_sync.dart';
 import '../l10n/app_strings.dart';
 import '../locale_controller.dart';
 import '../theme.dart';
 import 'login_screen.dart';
 import 'migration_screen.dart';
+import 'sync_screen.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
@@ -257,6 +259,27 @@ class _BackupScreenState extends State<BackupScreen> {
                 ),
               ),
 
+            Text(
+              S.t.syncTitle,
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            const SizedBox(height: 10),
+            ValueListenableBuilder<SyncState>(
+              valueListenable: DriveSync.state,
+              builder: (context, st, _) => _ActionTile(
+                icon: Icons.cloud_sync_outlined,
+                color: AppColors.primary,
+                title: S.t.syncTitle,
+                subtitle: st.enabled
+                    ? (st.email != null ? syncConnectedAs(st.email!) : '')
+                    : S.t.syncOff,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SyncScreen()),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 22),
             Text(
               S.t.createBackupTitle,
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),

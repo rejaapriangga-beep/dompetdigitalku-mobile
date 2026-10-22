@@ -8,6 +8,7 @@ import '../l10n/app_strings.dart';
 import '../locale_controller.dart';
 import '../models/models.dart';
 import '../route_observer.dart';
+import '../sync/drive_sync.dart';
 import '../theme.dart';
 import '../widgets/top_menu_bar.dart';
 import 'transactions_screen.dart';
@@ -43,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     super.initState();
     _load();
     _maybeShowOnboarding();
+    // Muat ulang ringkasan kalau sinkron membawa masuk data dari HP lain.
+    DriveSync.dataRevision.addListener(_load);
   }
 
   @override
@@ -55,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   @override
   void dispose() {
     routeObserver.unsubscribe(this);
+    DriveSync.dataRevision.removeListener(_load);
     super.dispose();
   }
 

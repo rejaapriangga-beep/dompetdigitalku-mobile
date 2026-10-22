@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../api/auth_api.dart' show ApiException;
 import '../data/local_store.dart';
 import '../data/server_migration.dart';
+import '../sync/drive_sync.dart';
 import '../l10n/app_strings.dart';
 import '../theme.dart';
 import 'home_screen.dart';
@@ -60,6 +61,11 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       // dan pengguna bisa mencoba lagi.
       if (await ServerMigration.hasServerSession()) {
         await ServerMigration.deleteServerData();
+      }
+      // Data sinkron di Google Drive ikut dihapus — kalau tidak, sinkron
+      // berikutnya akan membawa semua data kembali.
+      if (DriveSync.state.value.enabled) {
+        await DriveSync.disable(deleteRemote: true);
       }
       await LocalStore.wipeAll();
       if (!mounted) return;
