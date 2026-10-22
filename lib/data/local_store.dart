@@ -8,6 +8,7 @@ import 'package:sqflite/sqflite.dart' hide Transaction;
 import 'package:uuid/uuid.dart';
 import '../api/auth_api.dart' show ApiException;
 import '../models/models.dart';
+import '../storage/local_invoice_store.dart';
 import 'local_db.dart';
 
 class LocalStore {
@@ -81,6 +82,34 @@ class LocalStore {
   static double _num(Object? v) =>
       v == null ? 0 : (v is num ? v.toDouble() : double.parse(v.toString()));
   static double? _numOrNull(Object? v) => v == null ? null : _num(v);
+
+  /// Hapus SEMUA data di HP ini (database & foto invoice lokal), lalu
+  /// mulai lagi dari data bawaan pengguna baru.
+  static Future<void> wipeAll() async {
+    await LocalDb.reset();
+    await LocalInvoiceStore.deleteAll();
+  }
+
+  // ---------------------------------------------------------------- Meta
+
+  static Future<String?> getMeta(String key) async {
+    final db = await _db;
+    final rows = await db.query(
+      'meta',
+      where: 'key = ?',
+      whereArgs: [key],
+      limit: 1,
+    );
+    return rows.isEmpty ? null : rows.first['value'] as String;
+  }
+
+  static Future<void> setMeta(String key, String value) async {
+    final db = await _db;
+    await db.insert('meta', {
+      'key': key,
+      'value': value,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
 
   // ---------------------------------------------------------------- Akun
 
@@ -684,6 +713,13 @@ class LocalStore {
       );
       await _update(tx, 'transactions', id, values);
     });
+  }
+
+  /// Lepas tautan ke foto invoice lama di server (dipakai setelah fotonya
+  /// berhasil dipindah ke penyimpanan lokal HP).
+  static Future<void> clearInvoiceUrl(String id) async {
+    final db = await _db;
+    await _update(db, 'transactions', id, {'invoice_url': null});
   }
 
   static Future<void> deleteTransaction(String id) async {

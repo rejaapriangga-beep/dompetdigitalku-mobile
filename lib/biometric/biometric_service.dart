@@ -25,14 +25,19 @@ class BiometricService {
   /// Tampilkan prompt sidik jari/Face ID bawaan OS. `reason` muncul sebagai
   /// teks di dalam prompt-nya. Balikin `false` untuk apa pun yang bukan
   /// sukses (dibatalkan, gagal cocok, sensor error, dll) — tidak pernah
-  /// melempar exception ke pemanggil.
-  static Future<bool> authenticate(String reason) async {
+  /// melempar exception ke pemanggil. [allowDeviceCredential] membolehkan
+  /// PIN/pola/sandi layar HP sebagai ganti sidik jari — jalan keluar kalau
+  /// sensornya bermasalah, karena tidak ada lagi login akun sebagai cadangan.
+  static Future<bool> authenticate(
+    String reason, {
+    bool allowDeviceCredential = false,
+  }) async {
     try {
       return await _auth.authenticate(
         localizedReason: reason,
-        options: const AuthenticationOptions(
+        options: AuthenticationOptions(
           stickyAuth: true,
-          biometricOnly: true,
+          biometricOnly: !allowDeviceCredential,
         ),
       );
     } catch (_) {

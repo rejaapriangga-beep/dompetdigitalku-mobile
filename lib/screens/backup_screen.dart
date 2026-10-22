@@ -13,9 +13,12 @@ import 'package:intl/intl.dart';
 import '../ads/bottom_banner_ad.dart';
 import '../backup/backup_crypto.dart';
 import '../backup/backup_service.dart';
+import '../data/server_migration.dart';
 import '../l10n/app_strings.dart';
 import '../locale_controller.dart';
 import '../theme.dart';
+import 'login_screen.dart';
+import 'migration_screen.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
@@ -162,6 +165,36 @@ class _BackupScreenState extends State<BackupScreen> {
     }
   }
 
+  Future<void> _importFromServer() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(S.t.importFromServerTitle),
+        content: Text(S.t.importFromServerDescription),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(S.t.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(S.t.importFromServerButton),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    // Sesi login lama masih tersimpan → langsung pindahkan, tanpa login ulang.
+    final hasSession = await ServerMigration.hasServerSession();
+    if (!mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) =>
+            hasSession ? const MigrationScreen() : const LoginScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -259,6 +292,25 @@ class _BackupScreenState extends State<BackupScreen> {
               title: S.t.chooseBackupFileTitle,
               subtitle: S.t.chooseBackupFileSubtitle,
               onTap: _restoreLocal,
+            ),
+
+            const SizedBox(height: 22),
+            Text(
+              S.t.importFromServerTitle,
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              S.t.importFromServerDescription,
+              style: TextStyle(fontSize: 12, color: AppColors.inkSoft),
+            ),
+            const SizedBox(height: 10),
+            _ActionTile(
+              icon: Icons.cloud_download_outlined,
+              color: AppColors.inkSoft,
+              title: S.t.importFromServerButton,
+              subtitle: 'dompetdigitalku.my.id',
+              onTap: _importFromServer,
             ),
           ],
         ),

@@ -1,12 +1,14 @@
 // lib/screens/login_screen.dart
+// Login ke akun lama di server — sekarang HANYA dipakai untuk memindahkan
+// data pengguna lama ke HP (dibuka dari layar Backup). Aplikasinya sendiri
+// tidak butuh login lagi. Pendaftaran akun baru sudah ditiadakan.
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../api/auth_api.dart';
 import '../l10n/app_strings.dart';
 import '../theme.dart';
 import '../urls.dart';
-import 'home_screen.dart';
-import 'register_screen.dart';
+import 'migration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,9 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await AuthApi.login(_emailCtrl.text.trim(), _passwordCtrl.text);
       if (!mounted) return;
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const MigrationScreen()),
+      );
     } on ApiException catch (e) {
       setState(() => _error = e.message);
     } catch (_) {
@@ -50,9 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await AuthApi.loginWithGoogle();
       if (!mounted) return;
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const MigrationScreen()),
+      );
     } on ApiException catch (e) {
       setState(() => _error = e.message);
     } catch (e, st) {
@@ -67,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -104,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  S.t.signInToContinue,
+                  S.t.signInOldAccountTitle,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: AppColors.inkSoft),
                 ),
@@ -204,30 +207,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextSpan(text: S.t.googleConsentSuffix),
                     ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: RichText(
-                    text: TextSpan(
-                      style: TextStyle(fontSize: 12.5, color: AppColors.inkSoft),
-                      children: [
-                        TextSpan(text: S.t.noAccountYetPrefix),
-                        TextSpan(
-                          text: S.t.registerButton,
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            decoration: TextDecoration.underline,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const RegisterScreen(),
-                              ),
-                            ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               ],

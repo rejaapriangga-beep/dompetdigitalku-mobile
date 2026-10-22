@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../ads/bottom_banner_ad.dart';
-import '../api/auth_api.dart';
 import '../api/data_api.dart';
 import '../l10n/app_strings.dart';
 import '../locale_controller.dart';
@@ -15,7 +14,6 @@ import '../storage/token_storage.dart';
 import '../theme.dart';
 import '../widgets/currency_field.dart';
 import '../widgets/top_menu_bar.dart';
-import 'login_screen.dart';
 import 'accounts_assets_screen.dart';
 import 'invoice_view_screen.dart';
 import 'transaction_detail_screen.dart';
@@ -154,15 +152,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       .where((t) => t.type == 'expense')
       .fold(0, (s, t) => s + t.amount);
 
-  Future<void> _logout() async {
-    await AuthApi.logout();
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-      (route) => false,
-    );
-  }
-
   Future<void> _deleteTx(Transaction t) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -259,13 +248,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           S.t.menuTransactions,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        actions: [
-          IconButton(
-            onPressed: _logout,
-            icon: const Icon(Icons.logout),
-            tooltip: S.t.logoutTooltip,
-          ),
-        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddSheet,

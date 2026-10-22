@@ -363,6 +363,22 @@ class AppStringsData {
     required this.biometricLockedScreenTitle,
     required this.biometricUnlockButton,
     required this.biometricUnlockFailed,
+    required this.migrationTitle,
+    required this.migrationIntro,
+    required this.migrationRunning,
+    required this.migrationDoneTitle,
+    required this.migrationDeleteServerQuestion,
+    required this.migrationDeleteServerButton,
+    required this.migrationLaterButton,
+    required this.migrationLaterNote,
+    required this.migrationFailedTitle,
+    required this.migrationRetryButton,
+    required this.migrationServerDeleted,
+    required this.importFromServerTitle,
+    required this.importFromServerDescription,
+    required this.importFromServerButton,
+    required this.signInOldAccountTitle,
+    required this.biometricUseDeviceCredential,
   });
 
   final String appName;
@@ -701,6 +717,22 @@ class AppStringsData {
   final String biometricLockedScreenTitle;
   final String biometricUnlockButton;
   final String biometricUnlockFailed;
+  final String migrationTitle;
+  final String migrationIntro;
+  final String migrationRunning;
+  final String migrationDoneTitle;
+  final String migrationDeleteServerQuestion;
+  final String migrationDeleteServerButton;
+  final String migrationLaterButton;
+  final String migrationLaterNote;
+  final String migrationFailedTitle;
+  final String migrationRetryButton;
+  final String migrationServerDeleted;
+  final String importFromServerTitle;
+  final String importFromServerDescription;
+  final String importFromServerButton;
+  final String signInOldAccountTitle;
+  final String biometricUseDeviceCredential;
 }
 
 String typeConfirmWordToConfirm(String word) =>
@@ -1109,7 +1141,7 @@ const _id = AppStringsData(
   viewIntroTutorialAgain: 'Lihat tutorial perkenalan lagi',
   privacyPolicyLink: 'Kebijakan Privasi',
   termsLink: 'Syarat & Ketentuan',
-  deleteAccountLink: 'Hapus Akun',
+  deleteAccountLink: 'Hapus Semua Data',
   helpDarkModeTitle: 'Mode Gelap & Terang',
   helpTxPoint1:
       'Tap tombol "+" di pojok kanan bawah Beranda untuk catat transaksi baru, kapan saja.',
@@ -1162,18 +1194,18 @@ const _id = AppStringsData(
       'ulang.',
   areYouSureTitle: 'Yakin?',
   deleteAccountConfirmBody:
-      'Semua data keuangan rumah tangga ini akan terhapus permanen dan tidak '
-      'bisa dikembalikan.',
-  deleteAccountFailedGeneric: 'Gagal menghapus akun. Coba lagi nanti.',
+      'Semua data keuangan di HP ini akan terhapus permanen dan tidak bisa '
+      'dikembalikan, kecuali Anda punya file backup.',
+  deleteAccountFailedGeneric: 'Gagal menghapus data. Coba lagi nanti.',
   dangerZoneTitle: 'Zona Berbahaya',
   dangerZoneDescription:
-      'Menghapus akun akan menghapus secara permanen akun Anda beserta '
-      'seluruh data rumah tangga (transaksi, akun kas/bank, aset, utang, '
-      'investasi, dan anggaran). Tindakan ini tidak bisa dibatalkan. Jika '
-      'rumah tangga Anda memiliki anggota lain, hubungi '
-      'privacy@dompetdigitalku.my.id terlebih dahulu.',
+      'Ini menghapus permanen seluruh data keuangan yang tersimpan di HP ini '
+      '(transaksi, akun kas/bank, aset, utang, investasi, anggaran, dan foto '
+      'invoice). Kalau Anda masih punya akun lama di server DompetDigitalKu, '
+      'akun dan datanya di server ikut dihapus. Tindakan ini tidak bisa '
+      'dibatalkan — buat backup dulu kalau masih ingin menyimpannya.',
   deleteConfirmWord: 'HAPUS',
-  deleteAccountAndAllDataButton: 'Hapus Akun & Semua Data',
+  deleteAccountAndAllDataButton: 'Hapus Semua Data',
   signInToContinue: 'Masuk untuk lanjutkan',
   emailLabel: 'Email',
   passwordLabel: 'Password',
@@ -1195,7 +1227,8 @@ const _id = AppStringsData(
   mustAgreeError:
       'Anda harus menyetujui Kebijakan Privasi & Syarat Ketentuan untuk mendaftar.',
   registerButton: 'Daftar',
-  registerSuccessMessage: 'Registrasi berhasil! Mengarahkan ke halaman masuk...',
+  registerSuccessMessage:
+      'Registrasi berhasil! Mengarahkan ke halaman masuk...',
   registerFailedGeneric: 'Gagal mendaftar. Periksa koneksi internet Anda.',
   alreadyHaveAccountPrefix: 'Sudah punya akun? ',
   transactionDetailTitle: 'Detail Transaksi',
@@ -1247,6 +1280,26 @@ const _id = AppStringsData(
   biometricLockedScreenTitle: 'Terkunci',
   biometricUnlockButton: 'Buka dengan Sidik Jari',
   biometricUnlockFailed: 'Verifikasi gagal. Coba lagi.',
+  migrationTitle: 'Pindah ke Penyimpanan di HP',
+  migrationIntro:
+      'DompetDigitalKu sekarang menyimpan data keuangan Anda hanya di HP ini, tidak lagi di server kami. Data Anda sedang dipindahkan dari server ke HP ini.',
+  migrationRunning: 'Mengunduh data dari server…',
+  migrationDoneTitle: 'Data sudah pindah ke HP',
+  migrationDeleteServerQuestion:
+      'Salinan data Anda masih ada di server. Hapus sekarang? Data di HP ini tidak ikut terhapus.',
+  migrationDeleteServerButton: 'Hapus data di server',
+  migrationLaterButton: 'Nanti saja',
+  migrationLaterNote:
+      'Anda bisa menghapusnya kapan saja lewat Bantuan → Hapus Semua Data.',
+  migrationFailedTitle: 'Gagal memindahkan data',
+  migrationRetryButton: 'Coba lagi',
+  migrationServerDeleted: 'Data di server sudah dihapus.',
+  importFromServerTitle: 'Ambil Data dari Akun Lama',
+  importFromServerDescription:
+      'Dulu memakai akun DompetDigitalKu (login email/Google)? Masuk sekali untuk memindahkan data dari server ke HP ini. Data yang ada di HP ini akan diganti.',
+  importFromServerButton: 'Masuk ke Akun Lama',
+  signInOldAccountTitle: 'Masuk ke akun lama untuk memindahkan data',
+  biometricUseDeviceCredential: 'Pakai PIN/pola layar',
 );
 
 const _en = AppStringsData(
@@ -1539,7 +1592,7 @@ const _en = AppStringsData(
   viewIntroTutorialAgain: 'View intro tutorial again',
   privacyPolicyLink: 'Privacy Policy',
   termsLink: 'Terms & Conditions',
-  deleteAccountLink: 'Delete Account',
+  deleteAccountLink: 'Delete All Data',
   helpDarkModeTitle: 'Dark & Light Mode',
   helpTxPoint1:
       'Tap the "+" button at the bottom-right of Home to record a new '
@@ -1594,18 +1647,18 @@ const _en = AppStringsData(
       'reopen it.',
   areYouSureTitle: 'Are you sure?',
   deleteAccountConfirmBody:
-      "All of this household's financial data will be permanently deleted "
-      'and cannot be recovered.',
-  deleteAccountFailedGeneric: 'Failed to delete account. Try again later.',
+      'All financial data on this phone will be permanently deleted and '
+      'cannot be recovered unless you have a backup file.',
+  deleteAccountFailedGeneric: 'Failed to delete data. Try again later.',
   dangerZoneTitle: 'Danger Zone',
   dangerZoneDescription:
-      'Deleting your account will permanently remove your account along '
-      'with all household data (transactions, cash/bank accounts, assets, '
-      'debts, investments, and budgets). This action cannot be undone. If '
-      'your household has other members, contact '
-      'privacy@dompetdigitalku.my.id first.',
+      'This permanently deletes all financial data stored on this phone '
+      '(transactions, cash/bank accounts, assets, debts, investments, '
+      'budgets, and invoice photos). If you still have an old account on the '
+      'DompetDigitalKu server, that account and its data are deleted too. '
+      'This cannot be undone — make a backup first if you want to keep it.',
   deleteConfirmWord: 'DELETE',
-  deleteAccountAndAllDataButton: 'Delete Account & All Data',
+  deleteAccountAndAllDataButton: 'Delete All Data',
   signInToContinue: 'Sign in to continue',
   emailLabel: 'Email',
   passwordLabel: 'Password',
@@ -1680,4 +1733,33 @@ const _en = AppStringsData(
   biometricLockedScreenTitle: 'Locked',
   biometricUnlockButton: 'Unlock with Fingerprint',
   biometricUnlockFailed: 'Verification failed. Try again.',
+  migrationTitle: 'Moving to On-Phone Storage',
+  migrationIntro:
+      'DompetDigitalKu now keeps your financial data only on this phone, no longer on our server. Your data is being moved from the server to this phone.',
+  migrationRunning: 'Downloading data from the server…',
+  migrationDoneTitle: 'Your data is now on this phone',
+  migrationDeleteServerQuestion:
+      'A copy of your data is still on the server. Delete it now? The data on this phone is not affected.',
+  migrationDeleteServerButton: 'Delete server data',
+  migrationLaterButton: 'Later',
+  migrationLaterNote: 'You can delete it any time from Help → Delete All Data.',
+  migrationFailedTitle: 'Couldn\'t move your data',
+  migrationRetryButton: 'Try again',
+  migrationServerDeleted: 'Server data has been deleted.',
+  importFromServerTitle: 'Get Data from Old Account',
+  importFromServerDescription:
+      'Used a DompetDigitalKu account before (email/Google sign-in)? Sign in once to move your data from the server to this phone. The data currently on this phone will be replaced.',
+  importFromServerButton: 'Sign In to Old Account',
+  signInOldAccountTitle: 'Sign in to your old account to move your data',
+  biometricUseDeviceCredential: 'Use screen PIN/pattern',
 );
+
+String migrationDoneBody(int transactions, int invoices) =>
+    LocaleController.instance.isEnglish
+    ? '$transactions transactions${invoices > 0 ? ' and $invoices invoice photos' : ''} are now stored on this phone.'
+    : '$transactions transaksi${invoices > 0 ? ' dan $invoices foto invoice' : ''} sekarang tersimpan di HP ini.';
+
+String migrationInvoiceFailedNote(int count) =>
+    LocaleController.instance.isEnglish
+    ? '$count invoice photos could not be downloaded.'
+    : '$count foto invoice gagal diunduh.';

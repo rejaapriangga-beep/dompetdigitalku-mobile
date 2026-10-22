@@ -3,7 +3,6 @@
 // komposisi aset, rasio keuangan, transaksi terakhir, dan menu utama.
 import 'package:flutter/material.dart';
 import '../ads/bottom_banner_ad.dart';
-import '../api/auth_api.dart';
 import '../api/data_api.dart';
 import '../l10n/app_strings.dart';
 import '../locale_controller.dart';
@@ -11,7 +10,6 @@ import '../models/models.dart';
 import '../route_observer.dart';
 import '../theme.dart';
 import '../widgets/top_menu_bar.dart';
-import 'login_screen.dart';
 import 'transactions_screen.dart';
 import 'accounts_assets_screen.dart';
 import 'budgets_screen.dart';
@@ -150,15 +148,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
         .fold(0.0, (s, t) => s + t.amount);
   }
 
-  Future<void> _logout() async {
-    await AuthApi.logout();
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-      (route) => false,
-    );
-  }
-
   void _openMenu(Widget screen) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
   }
@@ -232,11 +221,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
             onPressed: () => _openMenu(const HelpScreen()),
             icon: const Icon(Icons.help_outline),
             tooltip: S.t.helpTooltip,
-          ),
-          IconButton(
-            onPressed: _logout,
-            icon: const Icon(Icons.logout),
-            tooltip: S.t.logoutTooltip,
           ),
         ],
       ),
@@ -703,4 +687,3 @@ class _BudgetHomeSummary extends StatelessWidget {
     );
   }
 }
-

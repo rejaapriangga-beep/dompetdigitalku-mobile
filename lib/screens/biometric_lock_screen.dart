@@ -1,14 +1,13 @@
 // lib/screens/biometric_lock_screen.dart
 // Layar kunci yang tampil di depan Beranda saat kunci sidik jari aktif (lihat
-// _AuthGate di main.dart) — sesi login (token) sudah ada, cuma perlu
-// diverifikasi ulang lewat sidik jari/Face ID sebelum konten app terbuka.
+// _AuthGate di main.dart) — pemilik HP perlu diverifikasi ulang lewat sidik
+// jari/Face ID (atau PIN/pola layar sebagai cadangan) sebelum konten app
+// terbuka.
 import 'package:flutter/material.dart';
-import '../api/auth_api.dart';
 import '../biometric/biometric_service.dart';
 import '../l10n/app_strings.dart';
 import '../theme.dart';
 import 'home_screen.dart';
-import 'login_screen.dart';
 
 class BiometricLockScreen extends StatefulWidget {
   const BiometricLockScreen({super.key});
@@ -30,12 +29,15 @@ class _BiometricLockScreenState extends State<BiometricLockScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _authenticate());
   }
 
-  Future<void> _authenticate() async {
+  Future<void> _authenticate({bool allowDeviceCredential = false}) async {
     setState(() {
       _checking = true;
       _failed = false;
     });
-    final ok = await BiometricService.authenticate(S.t.biometricUnlockReason);
+    final ok = await BiometricService.authenticate(
+      S.t.biometricUnlockReason,
+      allowDeviceCredential: allowDeviceCredential,
+    );
     if (!mounted) return;
     if (ok) {
       Navigator.of(
@@ -47,14 +49,6 @@ class _BiometricLockScreenState extends State<BiometricLockScreen> {
       _checking = false;
       _failed = true;
     });
-  }
-
-  Future<void> _logout() async {
-    await AuthApi.logout();
-    if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
   }
 
   @override
@@ -100,7 +94,7 @@ class _BiometricLockScreenState extends State<BiometricLockScreen> {
                 ],
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
-                  onPressed: _checking ? null : _authenticate,
+                  onPressed: _checking ? null : () => _authenticate(),
                   icon: _checking
                       ? const SizedBox(
                           width: 16,
@@ -115,8 +109,10 @@ class _BiometricLockScreenState extends State<BiometricLockScreen> {
                 ),
                 const SizedBox(height: 12),
                 TextButton(
-                  onPressed: _checking ? null : _logout,
-                  child: Text(S.t.logoutTooltip),
+                  onPressed: _checking
+                      ? null
+                      : () => _authenticate(allowDeviceCredential: true),
+                  child: Text(S.t.biometricUseDeviceCredential),
                 ),
               ],
             ),

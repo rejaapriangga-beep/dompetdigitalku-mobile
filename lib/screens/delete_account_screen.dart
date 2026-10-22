@@ -1,13 +1,14 @@
 // lib/screens/delete_account_screen.dart
-// Halaman "Zona Berbahaya" — hapus akun & seluruh data rumah tangga secara
-// permanen (pemenuhan hak hapus data UU PDP Pasal 26). Butuh ketik "HAPUS"
-// untuk konfirmasi, mencerminkan versi web di app/settings/account/page.tsx.
+// Halaman "Zona Berbahaya" — hapus permanen seluruh data di HP ini, plus akun
+// lama & datanya di server kalau sesi login lama masih ada (pemenuhan hak
+// hapus data UU PDP Pasal 26). Butuh ketik "HAPUS" untuk konfirmasi.
 import 'package:flutter/material.dart';
-import '../api/auth_api.dart';
-import '../api/data_api.dart';
+import '../api/auth_api.dart' show ApiException;
+import '../data/local_store.dart';
+import '../data/server_migration.dart';
 import '../l10n/app_strings.dart';
 import '../theme.dart';
-import 'login_screen.dart';
+import 'home_screen.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
   const DeleteAccountScreen({super.key});
@@ -55,11 +56,15 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       _error = null;
     });
     try {
-      await DataApi.deleteUserAccount();
-      await AuthApi.logout();
+      // Server dulu: kalau gagal (mis. offline), data di HP belum disentuh
+      // dan pengguna bisa mencoba lagi.
+      if (await ServerMigration.hasServerSession()) {
+        await ServerMigration.deleteServerData();
+      }
+      await LocalStore.wipeAll();
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
         (route) => false,
       );
     } on ApiException catch (e) {

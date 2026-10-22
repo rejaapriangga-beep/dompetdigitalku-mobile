@@ -29,8 +29,20 @@ class LocalDb {
   /// sqflite_common_ffi), skemanya dibuat lewat [createSchema].
   static void useForTesting(Database db) => _instance = Future.value(db);
 
+  static Future<String> _path() async =>
+      p.join(await getDatabasesPath(), _fileName);
+
+  /// Hapus seluruh isi database (fitur "Hapus Semua Data"). Pembukaan
+  /// berikutnya membuat database baru berisi data bawaan lagi.
+  static Future<void> reset() async {
+    final current = _instance;
+    _instance = null;
+    if (current != null) await (await current).close();
+    await deleteDatabase(await _path());
+  }
+
   static Future<Database> _open() async {
-    final path = p.join(await getDatabasesPath(), _fileName);
+    final path = await _path();
     return openDatabase(
       path,
       version: _version,
