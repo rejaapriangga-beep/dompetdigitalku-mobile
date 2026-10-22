@@ -426,6 +426,7 @@ class AppStringsData {
     required this.consentAgreeMiddle,
     required this.consentAgreeSuffix,
     required this.consentAcceptButton,
+    required this.healthDisclaimer,
   });
 
   final String appName;
@@ -827,6 +828,7 @@ class AppStringsData {
   final String consentAgreeMiddle;
   final String consentAgreeSuffix;
   final String consentAcceptButton;
+  final String healthDisclaimer;
 }
 
 String typeConfirmWordToConfirm(String word) =>
@@ -1441,6 +1443,7 @@ const _id = AppStringsData(
   consentAgreeMiddle: ' dan ',
   consentAgreeSuffix: '.',
   consentAcceptButton: 'Setuju & Mulai',
+  healthDisclaimer: 'Skor dan saran di halaman ini adalah estimasi informatif berdasarkan data yang Anda catat sendiri, bukan nasihat keuangan, investasi, atau perpajakan profesional. Pertimbangkan kondisi Anda dan konsultasikan dengan ahli sebelum mengambil keputusan keuangan penting.',
 );
 
 const _en = AppStringsData(
@@ -1940,6 +1943,7 @@ const _en = AppStringsData(
   consentAgreeMiddle: ' and ',
   consentAgreeSuffix: '.',
   consentAcceptButton: 'Agree & Start',
+  healthDisclaimer: 'The score and tips on this page are informational estimates based on the data you record yourself, not professional financial, investment, or tax advice. Consider your own situation and consult an expert before making important financial decisions.',
 );
 
 String migrationDoneBody(int transactions, int invoices) =>

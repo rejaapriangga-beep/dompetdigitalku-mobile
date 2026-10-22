@@ -402,6 +402,30 @@ class _HealthContentState extends State<HealthContent> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+                // Penegasan bahwa skor & saran di halaman ini bukan nasihat
+                // keuangan profesional (sejalan dengan Syarat & Ketentuan).
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: AppColors.inkSoft,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        S.t.healthDisclaimer,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          height: 1.45,
+                          color: AppColors.inkSoft,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
     );
