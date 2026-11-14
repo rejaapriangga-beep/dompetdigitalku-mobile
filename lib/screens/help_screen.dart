@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../ads/bottom_banner_ad.dart';
 import '../biometric/biometric_prefs.dart';
 import '../biometric/biometric_service.dart';
+import '../ads/ads_consent.dart';
 import '../l10n/app_strings.dart';
 import '../theme.dart';
 import '../urls.dart';
@@ -171,6 +172,7 @@ class HelpScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
+          const _AdPrivacyOptionsButton(),
           Center(
             child: TextButton.icon(
               onPressed: () => Navigator.of(context).push(
@@ -379,6 +381,37 @@ class _HelpTile extends StatelessWidget {
               .toList(),
         ),
       ),
+    );
+  }
+}
+
+/// Tombol "Pengaturan Privasi Iklan" — hanya tampil untuk pengguna di
+/// wilayah yang mewajibkan persetujuan iklan (GDPR: Uni Eropa/EEA/Inggris),
+/// supaya mereka bisa mengubah pilihannya kapan saja.
+class _AdPrivacyOptionsButton extends StatelessWidget {
+  const _AdPrivacyOptionsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: AdsConsent.privacyOptionsRequired(),
+      builder: (context, snapshot) {
+        if (snapshot.data != true) return const SizedBox.shrink();
+        return Center(
+          child: TextButton.icon(
+            onPressed: AdsConsent.showPrivacyOptions,
+            icon: Icon(
+              Icons.privacy_tip_outlined,
+              size: 16,
+              color: AppColors.inkSoft,
+            ),
+            label: Text(
+              S.t.adPrivacyOptions,
+              style: TextStyle(fontSize: 11.5, color: AppColors.inkSoft),
+            ),
+          ),
+        );
+      },
     );
   }
 }
