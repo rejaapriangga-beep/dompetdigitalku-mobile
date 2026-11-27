@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'ad_ids.dart';
+import 'ads_consent.dart';
 import 'ads_gate.dart';
 
 class BottomBannerAd extends StatefulWidget {
@@ -37,7 +38,19 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
     if (!mounted) return;
     if (!await AdsGate.adsSupported) return;
     if (!mounted) return;
-    _loadAd();
+    // Banner baru dimuat setelah persetujuan iklan (GDPR) beres dan SDK
+    // AdMob siap — lihat ads/ads_consent.dart.
+    if (AdsConsent.ready.value) {
+      _loadAd();
+    } else {
+      AdsConsent.ready.addListener(_onAdsReady);
+    }
+  }
+
+  void _onAdsReady() {
+    if (!AdsConsent.ready.value) return;
+    AdsConsent.ready.removeListener(_onAdsReady);
+    if (mounted) _loadAd();
   }
 
   Future<void> _loadAd() async {
@@ -76,6 +89,7 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
 
   @override
   void dispose() {
+    AdsConsent.ready.removeListener(_onAdsReady);
     _bannerAd?.dispose();
     super.dispose();
   }

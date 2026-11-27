@@ -2,10 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'ads/ad_ids.dart';
-import 'ads/ads_gate.dart';
+import 'ads/ads_consent.dart';
 import 'backup/auto_backup.dart';
 import 'biometric/biometric_prefs.dart';
 import 'data/server_migration.dart';
@@ -45,25 +43,11 @@ Future<void> main() async {
   await initializeDateFormatting('en_US', null);
   await ThemeController.instance.load();
   await LocaleController.instance.load();
-  // kAdsEnabled (lihat ads/ad_ids.dart) mematikan iklan total di seluruh
-  // app. AdsGate.adsSupported mengecek Google Play Services -- device tanpa
-  // GMS (mis. Huawei ber-HMS) pernah bikin white screen total saat AdMob
-  // native ad view dirender, jadi iklan di-skip khusus untuk device itu.
-  // Ini satu-satunya await di main() yang menyangkut iklan; sengaja ditunggu
-  // karena cuma cek lokal (bukan network) dan harus selesai SEBELUM SDK
-  // AdMob diinisialisasi sama sekali, bukan cuma sebelum ad pertama dimuat.
-  if (kAdsEnabled && await AdsGate.adsSupported) {
-    MobileAds.instance.initialize();
-    // Batasi rating konten iklan ke "General audiences" di level SDK —
-    // beda dari Blocking controls di AdMob Console (yang kategorinya bisa
-    // salah klasifikasi/butuh waktu propagasi), ini filter yang Google
-    // terapkan di setiap permintaan iklan berdasarkan rating resmi
-    // advertiser-nya. Lapisan tambahan, bukan pengganti Blocking controls.
-    MobileAds.instance.updateRequestConfiguration(
-      RequestConfiguration(maxAdContentRating: MaxAdContentRating.g),
-    );
-  }
   runApp(const DompetDigitalKuApp());
+  // Persetujuan iklan (GDPR, hanya muncul untuk pengguna Eropa) lalu
+  // inisialisasi SDK AdMob — lihat ads/ads_consent.dart. Device tanpa GMS
+  // (Huawei/Honor) tetap di-skip lewat AdsGate di dalamnya.
+  AdsConsent.gatherAndInit();
   // Sinkron Google Drive (kalau diaktifkan) — tidak ditunggu, berjalan di
   // belakang setelah UI tampil.
   DriveSync.init();
